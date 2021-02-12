@@ -1,5 +1,5 @@
 # copied from https://github.com/redlinger/simple-real-option-least-squares-monte-carlo/blob/master/real_options_v1.py
-
+"test"
 """
 Simple Real Option Value using Least Squares Monte Carlo (LSMC)
 Smith (2005) describes a straighforward procedure to value a real option
