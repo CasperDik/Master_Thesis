@@ -41,7 +41,7 @@ Longstaff, Francis A., and Eduardo S. Schwartz. "Valuing American options by
 import numpy as np
 from sklearn import linear_model
 import time
-"test"
+
 # INPUTS
 # ############################################################################
 
