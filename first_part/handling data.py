@@ -27,8 +27,9 @@ print(df.head())
 # new dataframe from 2008ish
 cp_2 = df.iloc[350:]
 
-# plot prices and returns
+# plot prices, returns, log returns
 fig, axs = plt.subplots(3)
+fig.tight_layout()
 axs[0].plot(cp_2.Date, cp_2.price)
 axs[1].plot(cp_2.Date, cp_2.daily_returns)
 axs[2].plot(cp_2.Date, cp_2.log_returns)
@@ -36,8 +37,5 @@ axs[2].plot(cp_2.Date, cp_2.log_returns)
 axs[0].title.set_text("Price:")
 axs[1].title.set_text("Returns:")
 axs[2].title.set_text("Log returns:")
-
-axs[0].get_xaxis().set_visible(False)
-axs[1].get_xaxis().set_visible(False)
 
 plt.show()
