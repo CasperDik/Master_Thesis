@@ -28,13 +28,12 @@ for i in range(8):
     Y[2, i] = cf_matrix[3, i] * np.exp(-rf)
 
 for j in range(7, -1, -1):
-    if Y[3,j] == 0:
+    if price_matrix[2,j] > K:
         Y = np.delete(Y,j, axis=1)
         X = np.delete(X, j, axis=1)
 
 # regress Y on constant, X, X^2
 regression = np.polyfit(X[2], Y[2], 2)
 print(regression)
-
 
 # compare immediate exercise with continuation value
