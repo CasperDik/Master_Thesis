@@ -51,7 +51,7 @@ def value_american_put(price_matrix, K, rf, paths, T):
                 X = np.delete(X, j, axis=1)
 
         # regress Y on constant, X, X^2
-        regression = np.polyfit(X[T-t], Y[T-t], 2)
+        regression = np.polyfit(X[T-t], Y[T-t], 2)      # todo: what if doesnt converge/no answer
         # first is coefficient for X^2, second is coefficient X, third is constant
         beta_2 = regression[0]
         slope = regression[1]
@@ -69,13 +69,13 @@ def value_american_put(price_matrix, K, rf, paths, T):
                 tick += 1
 
         # compare immediate exercise with continuation value
-        for i in range(paths):  # todo: fout met execute
+        for i in range(paths):
             if price_matrix[T-t, i] < K:
                 # cont > ex --> t=3 is cf exercise, t=2 --> 0
-                if continuation_value[0, i] > max(0, (K-price_matrix[T-t, i])):
+                if continuation_value[0, i] >= max(0, (K-price_matrix[T-t, i])):
                     cf_matrix[T-t, i] = 0
                     # cont < ex --> t=3 is 0, t=2 immediate exercise
-                elif continuation_value[0, i] <= max(0, K-price_matrix[T-t, i]):
+                elif continuation_value[0, i] < max(0, K-price_matrix[T-t, i]):
                     cf_matrix[T-t, i] = max(0, K-price_matrix[T-t, i])
                     for l in range(0, t):
                         cf_matrix[T-t+1+l, i] = 0
@@ -110,12 +110,12 @@ def value_american_put(price_matrix, K, rf, paths, T):
 paths = 1000
 T = 100
 
-K = 1.1
+K = 0.85
 rf = 0.06
-mu = 0.01 / np.sqrt(T)
+mu = 0
 sigma = 0.5 / np.sqrt(T)
 
 
 price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
-plot_price_matrix(price_matrix, T, paths)
+# plot_price_matrix(price_matrix, T, paths)
 cf, pv = value_american_put(price_matrix, K, rf, paths, T)
