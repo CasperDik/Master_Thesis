@@ -17,11 +17,11 @@ rf = 0.06
 paths = 8
 T = 3
 
-for t in range(1, T):
-    # cash flow matrix time 3
-    for p in range(paths):
-        cf_matrix[T, p] = max(0, K - (price_matrix[T, p]))
+# cash flow matrix time 3
+for p in range(paths):
+    cf_matrix[T, p] = max(0, K - (price_matrix[T, p]))
 
+for t in range(1, T):
     # find continuation value
     # X = price in time T-1, Y = pv cf
     Y = np.copy(cf_matrix)
@@ -56,11 +56,11 @@ for t in range(1, T):
             tick += 1
 
     # compare immediate exercise with continuation value
-    for i in range(paths):
+    for i in range(paths): # todo: mistakes here
         if price_matrix[T-t, i] < K:
             # cont > ex --> t=3 is cf exercise, t=2 --> 0
             if continuation_value[0, i] > max(0, (K-price_matrix[T-t, i])):
-                cf_matrix[T-t+1, i] = max(0, K-price_matrix[T-t+1, i])      # todo: mistakes here
+                cf_matrix[T-t+1, i] = max(0, K-price_matrix[T-t+1, i])
                 cf_matrix[T-t, i] = 0
             # cont < ex --> t=3 is 0, t=2 immediate exercise
             elif continuation_value[0, i] <= max(0, K-price_matrix[T-t, i]):
