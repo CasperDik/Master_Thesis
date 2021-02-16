@@ -16,8 +16,25 @@ K = 1.1
 rf = 0.06
 
 # cash flow matrix time 3
-for p in range(7):
+for p in range(8):
     cf_matrix[3, p] = max(0, K - (price_matrix[3, p]))
 
-cf_matrix.transpose()
-print(cf_matrix)
+# find continuation value
+# X = price in time T-1, Y = pv cf
+Y = cf_matrix
+X = price_matrix
+
+for i in range(8):
+    Y[2, i] = cf_matrix[3, i] * np.exp(-rf)
+
+for j in range(7, -1, -1):
+    if Y[3,j] == 0:
+        Y = np.delete(Y,j, axis=1)
+        X = np.delete(X, j, axis=1)
+
+# regress Y on constant, X, X^2
+regression = np.polyfit(X[2], Y[2], 2)
+print(regression)
+
+
+# compare immediate exercise with continuation value
