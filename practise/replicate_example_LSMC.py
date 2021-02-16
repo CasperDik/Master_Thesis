@@ -1,7 +1,8 @@
 import numpy as np
 
 """ 
-Here I have replicated the numerical example in chapter 1 of the paper by Longstaff and Schwartz(2001) 
+Here I have replicated the numerical example in chapter 1 of the paper by Longstaff and Schwartz(2001).
+It's an american put option on a non dividend paying share with K=1.1, rf=0.06 
 """
 
 # stock price paths matrix
@@ -39,10 +40,10 @@ for t in range(1, T):
     # regress Y on constant, X, X^2
     regression = np.polyfit(X[T-t], Y[T-t], 2)
     # first is coefficient for X^2, second is coefficient X, third is constant
-    print(regression)
     beta_2 = regression[0]
     slope = regression[1]
     intercept = regression[2]
+    print("Regression: E[Y|X] = ", intercept, " + ", slope, "* X", " + ", beta_2, "* X^2")
 
     # continuation value
     continuation_value = np.zeros((1, paths))
@@ -59,22 +60,24 @@ for t in range(1, T):
         if price_matrix[T-t, i] < K:
             # cont > ex --> t=3 is cf exercise, t=2 --> 0
             if continuation_value[0, i] > max(0, (K-price_matrix[T-t, i])):
-                cf_matrix[T-t+1, i] = max(0, K-price_matrix[T-t+1, i])
+                # cf_matrix[T-t+1, i] = max(0, K-price_matrix[T-t+1, i])
                 cf_matrix[T-t, i] = 0
-            # cont < ex --> t=3 is 0, t=2 immediate exercise
+                # cont < ex --> t=3 is 0, t=2 immediate exercise
             elif continuation_value[0, i] <= max(0, K-price_matrix[T-t, i]):
                 cf_matrix[T-t, i] = max(0, K-price_matrix[T-t, i])
                 cf_matrix[T-t+1, i] = 0
         # out of the money in t=2, t=2/3 both 0
         else:
-            cf_matrix[T-t+1, i] = 0
             cf_matrix[T-t, i] = 0
 
-# discount cfs to t=0
-for i in range(paths):
-    cf_matrix[0, i] = cf_matrix[1, i] * np.exp(-rf)
+# discounted cash flows
+discounted_cf = np.copy(cf_matrix)
+for t in range(0, T):
+    for i in range(paths):
+        if discounted_cf[T - t, i] != 0:
+            discounted_cf[T - t - 1, i] = discounted_cf[T - t, i] * np.exp(-rf)
 
 # obtain option value
-option_value = np.sum(cf_matrix[0])/paths
+option_value = np.sum(discounted_cf[0]) / paths
 
-print(option_value)
+print("value of this put option is: ", option_value)
