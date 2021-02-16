@@ -8,16 +8,15 @@ Here I have replicated the numerical example in chapter 1 of the paper by Longst
 # 8 paths, from t=0 to t=3
 price_matrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1], [1.09, 1.16, 1.22, 0.93, 1.11, 0.76, 0.92, 0.88], [1.08, 1.26, 1.07, 0.97, 1.56, 0.77, 0.84, 1.22], [1.34, 1.54, 1.03, 0.92, 1.52, 0.9, 1.01, 1.34]])
 
-# cash flow matrix
-cf_matrix = np.zeros((4, 8))
-
 # parameters
 K = 1.1
 rf = 0.06
 paths = 8
 T = 3
 
-# cash flow matrix time 3
+# cash flow matrix
+cf_matrix = np.zeros((T+1, paths))
+
 for p in range(paths):
     cf_matrix[T, p] = max(0, K - (price_matrix[T, p]))
 
@@ -68,5 +67,14 @@ for t in range(1, T):
                 cf_matrix[T-t+1, i] = 0
         # out of the money in t=2, t=2/3 both 0
         else:
-            cf_matrix[T, i] = 0
+            cf_matrix[T-t+1, i] = 0
             cf_matrix[T-t, i] = 0
+
+# discount cfs to t=0
+for i in range(paths):
+    cf_matrix[0, i] = cf_matrix[1, i] * np.exp(-rf)
+
+# obtain option value
+option_value = np.sum(cf_matrix[0])/paths
+
+print(option_value)
