@@ -14,6 +14,9 @@ cf_matrix = np.zeros((4, 8))
 # parameters
 K = 1.1
 rf = 0.06
+# todo: replace 8's with variable for number of paths (but set it equal to 8)
+# todo: replace the indexes e.g. Y[2,i] --> 2 needs to be variable --> T=3, T-1
+# todo: loop T times? --> replace T-1 with T-t
 
 # cash flow matrix time 3
 for p in range(8):
@@ -21,8 +24,8 @@ for p in range(8):
 
 # find continuation value
 # X = price in time T-1, Y = pv cf
-Y = cf_matrix
-X = price_matrix
+Y = np.copy(cf_matrix)
+X = np.copy(price_matrix)
 
 # discount cf t=3 to t=2
 for i in range(8):
@@ -42,8 +45,28 @@ slope = regression[1]
 intercept = regression[2]
 
 # continuation value
-continuation_value = np.zeros((1, len(X)+1))
-for i in range(len(X)+1):
-    continuation_value[0,i] = intercept + slope * X[2, i] + beta_2 * (X[2, i] ** 2)
+continuation_value = np.zeros((1, 8))
+tick = 0
+for i in range(8):
+    if price_matrix[2, i] < K:
+        continuation_value[0, i] = intercept + slope * X[2, i-tick] + beta_2 * (X[2, i-tick] ** 2)
+    else:
+        continuation_value[0, i] = 0
+        tick += 1
 
 # compare immediate exercise with continuation value
+for i in range(8):
+    if price_matrix[2, i] < K:
+        # cont > ex --> t=3 is cf exercise, t=2 --> 0
+        if continuation_value[0, i] > max(0, (K-price_matrix[2, i])):
+            cf_matrix[3, i] = max(0, K-price_matrix[3, i])
+            cf_matrix[2, i] = 0
+        # cont < ex --> t=3 is 0, t=2 immediate exercise
+        elif continuation_value[0, i] <= max(0, K-price_matrix[2, i]):
+            cf_matrix[2, i] = max(0, K-price_matrix[2, i])
+            cf_matrix[3, i] = 0
+    # out of the money in t=2, t=2/3 both 0
+    else:
+        cf_matrix[3, i] = 0
+        cf_matrix[2, i] = 0
+        print("3")
