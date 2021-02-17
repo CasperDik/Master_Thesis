@@ -2,12 +2,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-""" 
-Here I have replicated the numerical example in chapter 1 of the paper by Longstaff and Schwartz(2001).
-It's an american put option on a non dividend paying share with K=1.1, rf=0.06 
-"""
+def generate_random_price_matrix(T, paths, mu, sigma):
+    price_matrix = np.zeros(((T+1), paths))
+    for t in range(1, T+1):
+        for q in range(paths):
+            price_matrix[0, q] = 1
+            price_matrix[t, q] = max(0, price_matrix[t-1, q] + np.random.normal(mu, sigma, 1))
+    return price_matrix
 
-def value_american_put(price_matrix, K, rf, paths, T):
+def plot_price_matrix(price_matrix, T, paths):
+    for r in range(paths):
+        plt.plot(np.linspace(0, T, T+1), price_matrix[:, r])
+        plt.title("random generated price series")
+    plt.show()
+
+def payoff_executing(K, price, type):
+    if type == "put":
+        return max(0, K - price)
+    elif type == "call":
+        return max(0, price - K)
+    else:
+        print("Error, only put or call is possible")
+        raise SystemExit(0)
+
+def value_american_put(price_matrix, K, rf, paths, T, type):
     # start timer
     tic = time.time()
 
@@ -16,7 +34,8 @@ def value_american_put(price_matrix, K, rf, paths, T):
 
     # calculated cf if when executed in time T (cfs European option)
     for p in range(paths):
-        cf_matrix[T, p] = max(0, K - (price_matrix[T, p]))
+        cf_matrix[T, p] = payoff_executing(K, price_matrix[T,p], type)
+        # cf_matrix[T, p] = max(0, K - price_matrix[T, p])
 
     for t in range(1, T):
         # find continuation value
@@ -58,11 +77,11 @@ def value_american_put(price_matrix, K, rf, paths, T):
         for i in range(paths):
             if price_matrix[T-t, i] < K:
                 # cont > ex --> t=3 is cf exercise, t=2 --> 0
-                if continuation_value[0, i] >= max(0, (K-price_matrix[T-t, i])):
+                if continuation_value[0, i] >= payoff_executing(K, price_matrix[T - t, i], type):    # todo: check if these <,> statements are true for a put
                     cf_matrix[T-t, i] = 0
                     # cont < ex --> t=3 is 0, t=2 immediate exercise
-                elif continuation_value[0, i] < max(0, K-price_matrix[T-t, i]):
-                    cf_matrix[T-t, i] = max(0, K-price_matrix[T-t, i])
+                elif continuation_value[0, i] < payoff_executing(K, price_matrix[T - t, i], type):
+                    cf_matrix[T-t, i] = payoff_executing(K, price_matrix[T - t, i], type)
                     for l in range(0, t):
                         cf_matrix[T-t+1+l, i] = 0
             # out of the money in t=2, t=2/3 both 0
@@ -88,14 +107,18 @@ def value_american_put(price_matrix, K, rf, paths, T):
 
     return cf_matrix, discounted_cf
 
-# stock price matrix as given in Longstaff and Schwartz(2001)
-price_matrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1], [1.09, 1.16, 1.22, 0.93, 1.11, 0.76, 0.92, 0.88], [1.08, 1.26, 1.07, 0.97, 1.56, 0.77, 0.84, 1.22], [1.34, 1.54, 1.03, 0.92, 1.52, 0.9, 1.01, 1.34]])
-
 # inputs
 paths = 8
 T = 3
 
 K = 1.1
 rf = 0.06
+mu = 0
+sigma = 0.5 / np.sqrt(T)
 
-cf, pv = value_american_put(price_matrix, K, rf, paths, T)
+price_matrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1], [1.09, 1.16, 1.22, 0.93, 1.11, 0.76, 0.92, 0.88], [1.08, 1.26, 1.07, 0.97, 1.56, 0.77, 0.84, 1.22], [1.34, 1.54, 1.03, 0.92, 1.52, 0.9, 1.01, 1.34]])
+
+
+# price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
+# plot_price_matrix(price_matrix, T, paths)
+cf, pv = value_american_put(price_matrix, K, rf, paths, T, "put")
