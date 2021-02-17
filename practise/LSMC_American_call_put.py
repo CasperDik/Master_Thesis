@@ -28,11 +28,11 @@ def payoff_executing(K, price, type):
 def plotting_volatility(K, rf, paths, T, mu):
     for type in ["put", "call"]:
         values = []
-        for sigma in np.linspace(0, 0.6, 10):
+        for sigma in np.linspace(0, 0.6, 20):
             price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
             value, cf, pv = value_american_option(price_matrix, K, rf, paths, T, type)
             values.append(value)
-        plt.plot(np.linspace(0, 0.6, 10), values, label=type)
+        plt.plot(np.linspace(0, 0.6, 20), values, label=type)
     plt.legend()
     plt.title("Option values american call and put options with varying volatility")
     plt.xlabel("Volatility")
@@ -102,7 +102,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
                 tick += 1
 
         # compare immediate exercise with continuation value
-        for i in range(paths):
+        for i in range(paths):      # todo: are these correct for call? maybe check all matrices for call with simple example
             if price_matrix[T-t, i] < K:
                 # cont > ex --> t=3 is cf exercise, t=2 --> 0
                 if continuation_value[0, i] >= payoff_executing(K, price_matrix[T - t, i], type):
@@ -139,15 +139,15 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
 paths = 1000
 T = 100
 
-K = 1.1
+K = 1
 rf = 0.06
 mu = 0
 sigma = 0.5 / np.sqrt(T)
 
 
-# price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
+price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
 # plot_price_matrix(price_matrix, T, paths)
-# val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
+val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
 
-plotting_volatility(K, rf, paths, T, mu)
+# plotting_volatility(K, rf, paths, T, mu)
 # plotting_strike(rf, paths, T, mu, sigma)
