@@ -25,7 +25,35 @@ def payoff_executing(K, price, type):
         print("Error, only put or call is possible")
         raise SystemExit(0)
 
-def value_american_put(price_matrix, K, rf, paths, T, type):
+def plotting_volatility(K, rf, paths, T, mu):
+    for type in ["put", "call"]:
+        values = []
+        for sigma in np.linspace(0, 0.6, 10):
+            price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
+            value, cf, pv = value_american_option(price_matrix, K, rf, paths, T, type)
+            values.append(value)
+        plt.plot(np.linspace(0, 0.6, 10), values, label=type)
+    plt.legend()
+    plt.title("Option values american call and put options with varying volatility")
+    plt.xlabel("Volatility")
+    plt.ylabel("Option value")
+    plt.show()
+
+def plotting_strike(rf, paths, T, mu, sigma):
+    for type in ["put", "call"]:
+        values = []
+        for K in np.linspace(0.8, 1.2, 20):
+            price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
+            value, cf, pv = value_american_option(price_matrix, K, rf, paths, T, type)
+            values.append(value)
+        plt.plot(np.linspace(0.8, 1.2, 20), values, label=type)
+    plt.legend()
+    plt.title("Option values american call and put options with varying strike price")
+    plt.xlabel("Strike price")
+    plt.ylabel("Option value")
+    plt.show()
+
+def value_american_option(price_matrix, K, rf, paths, T, type):
     # start timer
     tic = time.time()
 
@@ -55,7 +83,7 @@ def value_american_put(price_matrix, K, rf, paths, T, type):
                 X = np.delete(X, j, axis=1)
 
         # regress Y on constant, X, X^2
-        regression = np.polyfit(X[T-t], Y[T-t], 2)
+        regression = np.polyfit(X[T-t], Y[T-t], 2)      # todo: when x is zero --> error (print all x? and check when error?)
         # first is coefficient for X^2, second is coefficient X, third is constant
         beta_2 = regression[0]
         slope = regression[1]
@@ -77,7 +105,7 @@ def value_american_put(price_matrix, K, rf, paths, T, type):
         for i in range(paths):
             if price_matrix[T-t, i] < K:
                 # cont > ex --> t=3 is cf exercise, t=2 --> 0
-                if continuation_value[0, i] >= payoff_executing(K, price_matrix[T - t, i], type):    # todo: check if these <,> statements are true for a put
+                if continuation_value[0, i] >= payoff_executing(K, price_matrix[T - t, i], type):
                     cf_matrix[T-t, i] = 0
                     # cont < ex --> t=3 is 0, t=2 immediate exercise
                 elif continuation_value[0, i] < payoff_executing(K, price_matrix[T - t, i], type):
@@ -98,27 +126,28 @@ def value_american_put(price_matrix, K, rf, paths, T, type):
     # obtain option value
     option_value = np.sum(discounted_cf[0]) / paths
 
-    print("value of this put option is: ", option_value)
+    print("value of this ", type," option is: ", option_value)
 
     # Time and print the elapsed time
     toc = time.time()
     elapsed_time = toc - tic
     print('Total running time: {:.2f} seconds'.format(elapsed_time))
 
-    return cf_matrix, discounted_cf
+    return option_value, cf_matrix, discounted_cf
 
 # inputs
-paths = 8
-T = 3
+paths = 1000
+T = 100
 
 K = 1.1
 rf = 0.06
 mu = 0
 sigma = 0.5 / np.sqrt(T)
 
-price_matrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1], [1.09, 1.16, 1.22, 0.93, 1.11, 0.76, 0.92, 0.88], [1.08, 1.26, 1.07, 0.97, 1.56, 0.77, 0.84, 1.22], [1.34, 1.54, 1.03, 0.92, 1.52, 0.9, 1.01, 1.34]])
-
 
 # price_matrix = generate_random_price_matrix(T, paths, mu, sigma)
 # plot_price_matrix(price_matrix, T, paths)
-cf, pv = value_american_put(price_matrix, K, rf, paths, T, "put")
+# val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
+
+plotting_volatility(K, rf, paths, T, mu)
+# plotting_strike(rf, paths, T, mu, sigma)
