@@ -165,8 +165,8 @@ sigma = 0.5
 mu = 0.06
 
 price_matrix = GBM(T, paths, mu, sigma, S_0)
-plot_price_matrix(price_matrix, T, paths)
-# val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
+# plot_price_matrix(price_matrix, T, paths)
+val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
 
 # plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
 # plotting_strike(K, rf, paths, T, mu, sigma, S_0)
