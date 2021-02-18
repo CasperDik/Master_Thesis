@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+
 def GBM(T, paths, mu, sigma, S_0):
     price_matrix = np.zeros(((T + 1), paths))
     dt = 1/T
@@ -11,11 +12,13 @@ def GBM(T, paths, mu, sigma, S_0):
             price_matrix[t, q] = price_matrix[t-1, q] * (1 + (mu * dt + sigma * np.sqrt(dt) * np.random.standard_normal()))
     return price_matrix
 
+
 def plot_price_matrix(price_matrix, T, paths):
     for r in range(paths):
         plt.plot(np.linspace(0, T, T+1), price_matrix[:, r])
         plt.title("GBM")
     plt.show()
+
 
 def payoff_executing(K, price, type):
     if type == "put":
@@ -25,6 +28,7 @@ def payoff_executing(K, price, type):
     else:
         print("Error, only put or call is possible")
         raise SystemExit(0)
+
 
 def plotting_volatility(K, rf, paths, T, mu, sigma, S_0):
     tic = time.time()
@@ -45,6 +49,7 @@ def plotting_volatility(K, rf, paths, T, mu, sigma, S_0):
     elapsed_time = toc - tic
     print('Total running time for plotting volatility: {:.2f} seconds'.format(elapsed_time))
 
+
 def plotting_strike(K, rf, paths, T, mu, sigma, S_0):
     tic = time.time()
     for type in ["put", "call"]:
@@ -63,6 +68,7 @@ def plotting_strike(K, rf, paths, T, mu, sigma, S_0):
     toc = time.time()
     elapsed_time = toc - tic
     print('Total running time for plotting strike: {:.2f} seconds'.format(elapsed_time))
+
 
 def value_american_option(price_matrix, K, rf, paths, T, type):
     # start timer
