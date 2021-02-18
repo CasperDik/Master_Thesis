@@ -77,10 +77,9 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     # cash flow matrix
     cf_matrix = np.zeros((T+1, paths))
 
-    # calculated cf if when executed in time T (cfs European option)
+    # calculated cf when executed in time T (cfs European option)
     for p in range(paths):
-        cf_matrix[T, p] = payoff_executing(K, price_matrix[T,p], type)
-        # cf_matrix[T, p] = max(0, K - price_matrix[T, p])
+        cf_matrix[T, p] = payoff_executing(K, price_matrix[T, p], type)
 
     for t in range(1, T):
         # find continuation value
@@ -89,7 +88,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
         Y = np.copy(cf_matrix)
         X = np.copy(price_matrix)
 
-        # discount cf t=3 to t=2
+        # discount cf 1 period
         for i in range(paths):
             Y[T-t, i] = cf_matrix[T-t+1, i] * np.exp(-rf)
 
@@ -145,7 +144,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     # obtain option value
     option_value = np.sum(discounted_cf[0]) / paths
 
-    print("value of this ", type," option is: ", option_value)
+    print("value of this ", type, " option is: ", option_value)
 
     # Time and print the elapsed time
     toc = time.time()
@@ -153,6 +152,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     print('Total running time: {:.2f} seconds'.format(elapsed_time))
 
     return option_value, cf_matrix, discounted_cf
+
 
 # inputs
 paths = 1000
@@ -164,9 +164,9 @@ rf = 0.06
 sigma = 0.5
 mu = 0.06
 
-# price_matrix = GBM(T, paths, mu, sigma, S_0)
-# plot_price_matrix(price_matrix, T, paths)
+price_matrix = GBM(T, paths, mu, sigma, S_0)
+plot_price_matrix(price_matrix, T, paths)
 # val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
 
-plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
-plotting_strike(K, rf, paths, T, mu, sigma, S_0)
+# plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
+# plotting_strike(K, rf, paths, T, mu, sigma, S_0)

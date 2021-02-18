@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 
 """ 
@@ -71,6 +70,7 @@ def value_american_put(price_matrix, K, rf, paths, T):
 
     # discounted cash flows
     discounted_cf = np.copy(cf_matrix)
+
     for t in range(0, T):
         for i in range(paths):
             if discounted_cf[T - t, i] != 0:
