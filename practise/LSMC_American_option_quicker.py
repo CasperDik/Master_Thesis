@@ -22,9 +22,11 @@ def plot_price_matrix(price_matrix, T, paths):
 
 def payoff_executing(K, price, type):
     if type == "put":
-        return max(0, K - price)
+        payoff_put = K - price
+        return payoff_put.clip(min=0)
     elif type == "call":
-        return max(0, price - K)
+        payoff_call = price - K
+        return payoff_call.clip(min=0)
     else:
         print("Error, only put or call is possible")
         raise SystemExit(0)
@@ -84,8 +86,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     cf_matrix = np.zeros((T+1, paths))
 
     # calculated cf when executed in time T (cfs European option)
-    for p in range(paths):      # todo: improve this part?  Vector(T)-K
-        cf_matrix[T, p] = payoff_executing(K, price_matrix[T, p], type)
+    cf_matrix[T] = payoff_executing(K, price_matrix[T], type)
 
     for t in range(1, T):
         # find continuation value
@@ -95,11 +96,10 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
         X = np.copy(price_matrix)
 
         # discount cf 1 period
-        for i in range(paths):      # todo: can make this quicker, leave out the index, just vector(T-t) * sth
-            Y[T-t, i] = cf_matrix[T-t+1, i] * np.exp(-rf)
+        Y[T-t] = cf_matrix[T-t+1] * np.exp(-rf)
 
         # delete columns that are out of the money in T-t
-        for j in range(paths-1, -1, -1):    # todo: can make this quicker, same as before
+        for j in range(paths-1, -1, -1):
             if price_matrix[T-t, j] * sign > K * sign:
                 Y = np.delete(Y, j, axis=1)
                 X = np.delete(X, j, axis=1)
@@ -143,7 +143,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     # discounted cash flows
     discounted_cf = np.copy(cf_matrix)
     for t in range(0, T):
-        for i in range(paths):  # todo: can do this without range?
+        for i in range(paths):
             if discounted_cf[T - t, i] != 0:
                 discounted_cf[T - t - 1, i] = discounted_cf[T - t, i] * np.exp(-rf)
 
@@ -170,9 +170,9 @@ rf = 0.06
 sigma = 0.5
 mu = 0.06
 
-price_matrix = GBM(T, paths, mu, sigma, S_0)
+# price_matrix = GBM(T, paths, mu, sigma, S_0)
 # plot_price_matrix(price_matrix, T, paths)
-val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
+# val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
 
-# plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
+plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
 # plotting_strike(K, rf, paths, T, mu, sigma, S_0)

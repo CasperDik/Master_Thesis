@@ -17,4 +17,3 @@ x = S_0 * x.cumprod(axis=0)
 toc = time.time()
 elapsed_time = toc - tic
 print(elapsed_time)
-

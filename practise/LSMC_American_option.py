@@ -8,7 +8,7 @@ def GBM(T, paths, mu, sigma, S_0):
     dt = 1/T
     for q in range(paths):
         price_matrix[0, q] = S_0
-        for t in range(1, T+1):     # todo: vectorize this, the error part
+        for t in range(1, T+1):
             price_matrix[t, q] = price_matrix[t-1, q] * (1 + (mu * dt + sigma * np.sqrt(dt) * np.random.standard_normal()))
     return price_matrix
 
@@ -84,7 +84,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     cf_matrix = np.zeros((T+1, paths))
 
     # calculated cf when executed in time T (cfs European option)
-    for p in range(paths):      # todo: improve this part?  Vector(T)-K
+    for p in range(paths):
         cf_matrix[T, p] = payoff_executing(K, price_matrix[T, p], type)
 
     for t in range(1, T):
@@ -95,11 +95,11 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
         X = np.copy(price_matrix)
 
         # discount cf 1 period
-        for i in range(paths):      # todo: can make this quicker, leave out the index, just vector(T-t) * sth
+        for i in range(paths):
             Y[T-t, i] = cf_matrix[T-t+1, i] * np.exp(-rf)
 
         # delete columns that are out of the money in T-t
-        for j in range(paths-1, -1, -1):    # todo: can make this quicker, same as before
+        for j in range(paths-1, -1, -1):
             if price_matrix[T-t, j] * sign > K * sign:
                 Y = np.delete(Y, j, axis=1)
                 X = np.delete(X, j, axis=1)
@@ -143,7 +143,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     # discounted cash flows
     discounted_cf = np.copy(cf_matrix)
     for t in range(0, T):
-        for i in range(paths):  # todo: can do this without range?
+        for i in range(paths):
             if discounted_cf[T - t, i] != 0:
                 discounted_cf[T - t - 1, i] = discounted_cf[T - t, i] * np.exp(-rf)
 
