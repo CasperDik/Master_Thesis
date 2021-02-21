@@ -161,7 +161,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
 
 
 # inputs
-paths = 1000
+paths = 2000
 T = 50
 
 K = 10

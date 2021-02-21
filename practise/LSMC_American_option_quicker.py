@@ -4,12 +4,12 @@ import time
 
 
 def GBM(T, paths, mu, sigma, S_0):
-    price_matrix = np.zeros(((T + 1), paths))
     dt = 1/T
-    for q in range(paths):
-        price_matrix[0, q] = S_0
-        for t in range(1, T+1):     # todo: vectorize this, the error part
-            price_matrix[t, q] = price_matrix[t-1, q] * (1 + (mu * dt + sigma * np.sqrt(dt) * np.random.standard_normal()))
+
+    price_matrix = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, T)).T)
+    price_matrix = np.vstack([np.ones(paths), price_matrix])
+    price_matrix = S_0 * price_matrix.cumprod(axis=0)
+
     return price_matrix
 
 
@@ -161,7 +161,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
 
 
 # inputs
-paths = 1000
+paths = 2000
 T = 50
 
 K = 10
