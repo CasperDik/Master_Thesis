@@ -3,24 +3,15 @@ import matplotlib.pyplot as plt
 import time
 
 
-def GBM(T, ti, paths, mu, sigma, S_0):
-    T = T * ti
-    dt = 1 / ti
+def GBM(T, paths, mu, sigma, S_0):
+    np.random.seed(0)
+    T = T
+    dt = 1 / T
 
     price_matrix = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, T)).T)
     price_matrix = np.vstack([np.ones(paths), price_matrix])
     price_matrix = S_0 * price_matrix.cumprod(axis=0)
 
-    return price_matrix
-
-
-def GBM1(T, paths, mu, sigma, S_0):
-    price_matrix = np.zeros(((T + 1), paths))
-    dt = 1/T
-    for q in range(paths):
-        price_matrix[0, q] = S_0
-        for t in range(1, T+1):
-            price_matrix[t, q] = price_matrix[t-1, q] * (1 + (mu * dt + sigma * np.sqrt(dt) * np.random.standard_normal()))
     return price_matrix
 
 
@@ -70,7 +61,6 @@ def american_option(price_matrix, K, rf, paths, T, type):
         X1 = np.ma.masked_less_equal(X, 0)
         Y1 = np.ma.masked_less_equal(Y, 0) - 1
         regression = np.ma.polyfit(X1, Y1, 2)
-
         beta_2 = regression[0]
         slope = regression[1]
         intercept = regression[2]
@@ -83,8 +73,8 @@ def american_option(price_matrix, K, rf, paths, T, type):
 
         # update cash flow matrix
         imm_ex = payoff_executing(K, X1, type)
-        cf_matrix[T-t] = np.ma.where(imm_ex * sign >= cont_value * sign, imm_ex, 0)
-        cf_matrix[T-t+1] = np.ma.where(imm_ex * sign >= cont_value * sign, 0, cf_matrix[T-t+1])
+        cf_matrix[T-t] = np.ma.where(imm_ex > cont_value, imm_ex, 0)
+        cf_matrix[T-t+1:] = np.ma.where(imm_ex > cont_value, 0, cf_matrix[T-t+1:])
 
     # todo:  do this without loops?
     discounted_cf = np.copy(cf_matrix)
@@ -103,7 +93,7 @@ def american_option(price_matrix, K, rf, paths, T, type):
     elapsed_time = toc - tic
     print('Total running time: {:.2f} seconds'.format(elapsed_time))
 
-    return discounted_cf
+    return discounted_cf, cf_matrix
 # inputs
 
 """
@@ -124,9 +114,9 @@ rf = 0.06
 sigma = 0.4
 mu = 0.06
 
-price_matrix = GBM1(T, paths, mu, sigma, S_0)
+price_matrix = GBM(T, paths, mu, sigma, S_0)
 
 
-pv = american_option(price_matrix, K, rf, paths, T, "call")
+pv, cf = american_option(price_matrix, K, rf, paths, T, "call")
 
 

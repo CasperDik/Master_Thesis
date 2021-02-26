@@ -1,19 +1,7 @@
 import numpy as np
 import time
 
-tic = time.time()
+x = np.array([[1, 1, 1, 1, 1, 1, 1, 1], [1.09, 1.16, 1.22, 0.93, 1.11, 0.76, 0.92, 0.88], [1.08, 1.26, 1.07, 0.97, 1.56, 0.77, 0.84, 1.22], [1.34, 1.54, 1.03, 0.92, 1.52, 0.9, 1.01, 1.34]])
 
-paths = 5000
-mu = 0.06
-sigma = 0.5
-T = 50
-dt = 1/T
-S_0 = 10
-
-x = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, T)).T)
-x = np.vstack([np.ones(paths), x])
-x = S_0 * x.cumprod(axis=0)
-
-toc = time.time()
-elapsed_time = toc - tic
-print(elapsed_time)
+x[2:] = np.ma.where(x[2:] > 1, -1, 0)
+print(x)

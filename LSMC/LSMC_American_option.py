@@ -4,6 +4,19 @@ import time
 
 
 def GBM(T, paths, mu, sigma, S_0):
+    np.random.seed(0)
+    T = T
+    dt = 1 / T
+
+    price_matrix = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, T)).T)
+    price_matrix = np.vstack([np.ones(paths), price_matrix])
+    price_matrix = S_0 * price_matrix.cumprod(axis=0)
+
+    return price_matrix
+
+
+def GBM1(T, paths, mu, sigma, S_0):
+    np.random.seed(0)
     price_matrix = np.zeros(((T + 1), paths))
     dt = 1/T
     for q in range(paths):
