@@ -162,12 +162,12 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
 
 # inputs
 paths = 2000
-T = 50
+T = 10
 
 K = 10
-S_0 = 10
+S_0 = 12
 rf = 0.06
-sigma = 0.5
+sigma = 0.4
 mu = 0.06
 
 price_matrix = GBM(T, paths, mu, sigma, S_0)

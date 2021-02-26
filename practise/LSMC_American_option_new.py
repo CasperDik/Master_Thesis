@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import time
 
 
-def GBM(T, paths, mu, sigma, S_0):
-    dt = 1/T
+def GBM(T, ti, paths, mu, sigma, S_0):
+    T = T * ti
+    dt = 1 / ti
 
     price_matrix = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, T)).T)
     price_matrix = np.vstack([np.ones(paths), price_matrix])
@@ -13,7 +14,8 @@ def GBM(T, paths, mu, sigma, S_0):
     return price_matrix
 
 
-def plot_price_matrix(price_matrix, T, paths):
+def plot_price_matrix(price_matrix, T, ti, paths):
+    T = T * ti
     for r in range(paths):
         plt.plot(np.linspace(0, T, T+1), price_matrix[:, r])
         plt.title("GBM")
@@ -32,13 +34,14 @@ def payoff_executing(K, price, type):
         raise SystemExit(0)
 
 
-def plotting_volatility(K, rf, paths, T, mu, sigma, S_0):
+def plotting_volatility(K, rf, paths, T, ti, mu, sigma, S_0):
+    T = T * ti
     tic = time.time()
     for type in ["put", "call"]:
         values = []
         for sig in np.linspace(0, sigma*2, 20):
-            price_matrix = GBM(T, paths, mu, sig, S_0)
-            value, cf, pv = value_american_option(price_matrix, K, rf, paths, T, type)
+            price_matrix = GBM(T, ti, paths, mu, sig, S_0)
+            value, cf, pv = value_american_option(price_matrix, K, rf, paths, T, ti, type)
             values.append(value)
         plt.plot(np.linspace(0, sigma*2, 20), values, label=type)
     plt.legend()
@@ -52,13 +55,14 @@ def plotting_volatility(K, rf, paths, T, mu, sigma, S_0):
     print('Total running time for plotting volatility: {:.2f} seconds'.format(elapsed_time))
 
 
-def plotting_strike(K, rf, paths, T, mu, sigma, S_0):
+def plotting_strike(K, rf, paths, T, ti, mu, sigma, S_0):
+    T = T * ti
     tic = time.time()
     for type in ["put", "call"]:
         values = []
         for k in np.linspace(K-K/2, K+K/2, 20):
-            price_matrix = GBM(T, paths, mu, sigma, S_0)
-            value, cf, pv = value_american_option(price_matrix, k, rf, paths, T, type)
+            price_matrix = GBM(T, ti, paths, mu, sigma, S_0)
+            value, cf, pv = value_american_option(price_matrix, k, rf, paths, T, ti, type)
             values.append(value)
         plt.plot(np.linspace(K-K/2, K+K/2, 20), values, label=type)
     plt.legend()
@@ -72,7 +76,8 @@ def plotting_strike(K, rf, paths, T, mu, sigma, S_0):
     print('Total running time for plotting strike: {:.2f} seconds'.format(elapsed_time))
 
 
-def value_american_option(price_matrix, K, rf, paths, T, type):
+def value_american_option(price_matrix, K, rf, paths, T, ti, type):
+    T = T * ti
     # start timer
     tic = time.time()
 
@@ -96,7 +101,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
         X = np.copy(price_matrix)
 
         # discount cf 1 period
-        Y[T-t] = cf_matrix[T-t+1] * np.exp(-rf)
+        Y[T-t] = cf_matrix[T-t+1] * np.exp(-rf*(1/ti))
 
         # delete columns that are out of the money in T-t
         for j in range(paths-1, -1, -1):
@@ -145,7 +150,7 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
     for t in range(0, T):
         for i in range(paths):
             if discounted_cf[T - t, i] != 0:
-                discounted_cf[T - t - 1, i] = discounted_cf[T - t, i] * np.exp(-rf)
+                discounted_cf[T - t - 1, i] = discounted_cf[T - t, i] * np.exp(-rf*(1/ti))
 
     # obtain option value
     option_value = np.sum(discounted_cf[0]) / paths
@@ -162,17 +167,23 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
 
 # inputs
 paths = 2000
-T = 50
+# number of years
+T = 10
+# steps per year
+ti = 12
 
 K = 10
-S_0 = 10
+S_0 = 12
+
+# yearly
 rf = 0.06
-sigma = 0.5
-mu = 0.06
+q = 0.00
+sigma = 0.4
+mu = rf-q
 
-# price_matrix = GBM(T, paths, mu, sigma, S_0)
-# plot_price_matrix(price_matrix, T, paths)
-# val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
+price_matrix = GBM(T, ti, paths, mu, sigma, S_0)
+# plot_price_matrix(price_matrix, T, ti, paths)
+val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, ti, "call")
 
-plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
-# plotting_strike(K, rf, paths, T, mu, sigma, S_0)
+# plotting_volatility(K, rf, paths, T, ti, mu, sigma, S_0)
+# plotting_strike(K, rf, paths, T, ti, mu, sigma, S_0)
