@@ -8,8 +8,9 @@ from scipy.stats import norm
 def BSM(S_0, K, rf, sigma, T):
     d1 = (np.log(S_0/K) + (rf + sigma**2/2)*T)/(sigma*np.sqrt(T))
     d2 = d1 - sigma * np.sqrt(T)
+    # todo: add div yield
     call = S_0 * norm.cdf(d1) - K * np.exp(-rf*T) * norm.cdf(d2)
-    put = K * np.exp(-rf*T) * norm.cdf(-d2) - S_0 * np.exp(-rf*T) * norm.cdf(-d1)
+    put = K * np.exp(-rf*T) * norm.cdf(-d2) - S_0 * norm.cdf(-d1)
     return call, put
 
 def plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
@@ -30,9 +31,9 @@ def plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
         BSM_call.append(call)
 
     plt.plot(np.linspace(K-K/2, K+K/2, 20), LSMC_call, "--", label="LSMC call")
-    plt.plot(np.linspace(K-K/2, K+K/2, 20), BSM_call, label="BSM call" )
+    plt.plot(np.linspace(K-K/2, K+K/2, 20), BSM_call, label="BSM call", alpha=0.7)
     plt.plot(np.linspace(K-K/2, K+K/2, 20), LSMC_put, "--", label="LSMC put")
-    plt.plot(np.linspace(K-K/2, K+K/2, 20), BSM_put, label="BSM put" )
+    plt.plot(np.linspace(K-K/2, K+K/2, 20), BSM_put, label="BSM put", alpha=0.7)
 
     plt.legend()
     plt.title("Analytical solutions BSM vs LSMC of european option")
@@ -59,9 +60,9 @@ def plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
         BSM_call.append(call)
 
     plt.plot(np.linspace(0, sigma*2, 20), LSMC_call, "--", label="LSMC call")
-    plt.plot(np.linspace(0, sigma*2, 20), BSM_call, label="BSM call" )
+    plt.plot(np.linspace(0, sigma*2, 20), BSM_call, label="BSM call", alpha=0.7)
     plt.plot(np.linspace(0, sigma*2, 20), LSMC_put, "--", label="LSMC put")
-    plt.plot(np.linspace(0, sigma*2, 20), BSM_put, label="BSM put" )
+    plt.plot(np.linspace(0, sigma*2, 20), BSM_put, label="BSM put", alpha=0.7)
 
     plt.legend()
     plt.title("Analytical solutions BSM vs LSMC of european option")
@@ -69,7 +70,7 @@ def plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.ylabel("Option value")
     plt.show()
 
-paths = 20000
+paths = 200000
 # years
 T = 1
 # execute possibilities per year
@@ -82,5 +83,5 @@ rf = 0.06
 sigma = 0.2
 mu = 0.06
 
-plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+# plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+# plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths)

@@ -11,7 +11,7 @@ def GBM(T, dt, paths, mu, sigma, S_0):
     # adjust mu, sigma
     mu = (1+mu)**(1/dt)-1
     sigma = sigma / np.sqrt(dt)
-
+    # todo: add div yield
     price_matrix = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, N)).T)
     price_matrix = np.vstack([np.ones(paths), price_matrix])
     price_matrix = S_0 * price_matrix.cumprod(axis=0)

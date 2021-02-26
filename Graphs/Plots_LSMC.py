@@ -3,8 +3,6 @@ from Graphs.european_LSMC_vs_analytical import BSM
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-
 def plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
     LSMC_put = []
@@ -33,7 +31,7 @@ def plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
     LSMC_put = []
 
-    for K in np.linspace(K - K / 2, K + K / 2, 20):
+    for K in np.linspace(K - K / 4, K + K / 4, 20):
         for type in ["put", "call"]:
             if type == "call":
                 LSMC_call.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
@@ -53,7 +51,7 @@ def plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
     LSMC_put = []
 
-    for S in np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20):
+    for S in np.linspace(S_0 - S_0 / 4, S_0 + S_0 / 4, 20):
         for type in ["put", "call"]:
             if type == "call":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S)
@@ -75,7 +73,7 @@ def plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
     LSMC_put = []
 
-    for time in np.linspace(0, T * 2, 20):
+    for time in np.linspace(T, T * 10, 10, dtype= int):
         for type in ["put", "call"]:
             if type == "call":
                 price_matrix = GBM(time, dt, paths, mu, sigma, S_0)
@@ -99,7 +97,7 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
     BSM_call = []
     BSM_put = []
 
-    for S in np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20):
+    for S in np.linspace(S_0 - S_0 / 4, S_0 + S_0 / 4, 20):
         for type in ["put", "call"]:
             if type == "call":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S)
@@ -107,7 +105,7 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
             elif type == "put":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S)
                 LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
-        call, put = BSM(S_0, K, rf, sigma, T)
+        call, put = BSM(S, K, rf, sigma, T)
         BSM_put.append(put)
         BSM_call.append(call)
 
@@ -123,9 +121,9 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.show()
 
 # inputs
-paths = 500
+paths = 2000
 # years
-T = 5
+T = 1
 # execute possibilities per year
 # american option large dt
 dt = 365
@@ -136,8 +134,8 @@ rf = 0.06
 sigma = 0.2
 mu = 0.06
 
-plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+# plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
+# plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+# plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+# american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
