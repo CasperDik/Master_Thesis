@@ -73,6 +73,7 @@ paths = 20000
 # years
 T = 1
 # execute possibilities per year
+# has to be 1 otherwise not european option
 dt = 1
 
 K = 10
