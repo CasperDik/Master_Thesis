@@ -1,6 +1,9 @@
 from LSMC.LSMC_American_option_quicker import LSMC, GBM
+from LSMC.european_LSMC_vs_analytical import BSM
 import numpy as np
 import matplotlib.pyplot as plt
+
+
 
 def plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
@@ -64,7 +67,7 @@ def plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
 
     plt.legend()
     plt.title("Value of the option - LSMC")
-    plt.xlabel("Asset price, S")
+    plt.xlabel("Asset price, St")
     plt.ylabel("Option value")
     plt.show()
 
@@ -90,8 +93,37 @@ def plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.ylabel("Option value")
     plt.show()
 
+def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
+    LSMC_call = []
+    LSMC_put = []
+    BSM_call = []
+    BSM_put = []
+
+    for S in np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20):
+        for type in ["put", "call"]:
+            if type == "call":
+                price_matrix = GBM(T, dt, paths, mu, sigma, S)
+                LSMC_call.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
+            elif type == "put":
+                price_matrix = GBM(T, dt, paths, mu, sigma, S)
+                LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
+        call, put = BSM(S_0, K, rf, sigma, T)
+        BSM_put.append(put)
+        BSM_call.append(call)
+
+    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), LSMC_call, "--", label="LSMC call")
+    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), BSM_call, label="BSM call")
+    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), LSMC_put, "--", label="LSMC put")
+    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), BSM_put, label="BSM put")
+
+    plt.legend()
+    plt.title("European vs American option")
+    plt.ylabel("Option value")
+    plt.xlabel("Asset price, St")
+    plt.show()
+
 # inputs
-paths = 750
+paths = 500
 # years
 T = 5
 # execute possibilities per year
@@ -108,3 +140,4 @@ plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
