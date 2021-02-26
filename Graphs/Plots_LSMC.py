@@ -135,7 +135,7 @@ sigma = 0.2
 mu = 0.06
 
 # plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+# plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
