@@ -1,5 +1,5 @@
 from LSMC.LSMC_American_option_quicker import LSMC, GBM
-from LSMC.european_LSMC_vs_analytical import BSM
+from Graphs.european_LSMC_vs_analytical import BSM
 import numpy as np
 import matplotlib.pyplot as plt
 
