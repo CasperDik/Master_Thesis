@@ -113,7 +113,7 @@ def LSMC(price_matrix, K, rf, paths, T, dt, type):
 
     print("Value of this", type, "option is:", option_value)
 
-    return discounted_cf, cf_matrix
+    return option_value
 
 
 # inputs
@@ -138,6 +138,6 @@ rf = 0.06
 sigma = 0.1
 mu = 0.06
 
-price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-pv, cf = LSMC(price_matrix, K, rf, paths, T, dt, "call")
+# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+# value, pv, cf = LSMC(price_matrix, K, rf, paths, T, dt, "call")
 # plot_price_matrix(price_matrix, T, dt, paths)
