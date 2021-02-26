@@ -83,16 +83,17 @@ def LSMC(price_matrix, K, rf, paths, T, dt, type):
         X1 = np.ma.masked_less_equal(X, 0)
         Y1 = np.ma.masked_less_equal(Y, 0) - 1
 
-        regression = np.ma.polyfit(X1, Y1, 2)
+        if X1.count() > 0:
+            regression = np.ma.polyfit(X1, Y1, 2)
 
-        # calculate continuation value
-        cont_value = np.zeros_like(Y1)
-        cont_value = np.polyval(regression, X1)
+            # calculate continuation value
+            cont_value = np.zeros_like(Y1)
+            cont_value = np.polyval(regression, X1)
 
-        # update cash flow matrix
-        imm_ex = payoff_executing(K, X1, type)
-        cf_matrix[N - t] = np.ma.where(imm_ex > cont_value, imm_ex, 0)
-        cf_matrix[N - t + 1:] = np.ma.where(imm_ex > cont_value, 0, cf_matrix[N - t + 1:])
+            # update cash flow matrix
+            imm_ex = payoff_executing(K, X1, type)
+            cf_matrix[N - t] = np.ma.where(imm_ex > cont_value, imm_ex, 0)
+            cf_matrix[N - t + 1:] = np.ma.where(imm_ex > cont_value, 0, cf_matrix[N - t + 1:])
 
     # todo:  do this without loops?
     discounted_cf = np.copy(cf_matrix)
@@ -125,14 +126,14 @@ K = 1.1
 rf = 0.06
 """
 
-paths = 1000
+paths = 2000000
 # years
 T = 1
 # execute possibilities per year
-dt = 365
+dt = 1
 
-K = 80
-S_0 = 120
+K = 130
+S_0 = 130
 rf = 0.06
 sigma = 0.1
 mu = 0.06
