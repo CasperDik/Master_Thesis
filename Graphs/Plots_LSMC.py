@@ -132,7 +132,9 @@ K = 10
 S_0 = 10
 rf = 0.06
 sigma = 0.2
-mu = 0.06
+r = 0.06
+q = 0.01
+mu = r - q
 
 # plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)

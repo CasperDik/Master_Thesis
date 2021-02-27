@@ -5,15 +5,14 @@ from scipy.stats import norm
 
 """Comparing the option values of european options from LSMC method with the analytical solutions from BSM"""
 
-def BSM(S_0, K, rf, sigma, T):
-    d1 = (np.log(S_0/K) + (rf + sigma**2/2)*T)/(sigma*np.sqrt(T))
+def BSM(S_0, K, r, q, sigma, T):
+    d1 = (np.log(S_0/K) + (r - q + sigma ** 2 / 2) * T) / (sigma * np.sqrt(T))
     d2 = d1 - sigma * np.sqrt(T)
-    # todo: add div yield
-    call = S_0 * norm.cdf(d1) - K * np.exp(-rf*T) * norm.cdf(d2)
-    put = K * np.exp(-rf*T) * norm.cdf(-d2) - S_0 * norm.cdf(-d1)
+    call = S_0 * np.exp(-q * T) * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
+    put = K * np.exp(-r * T) * norm.cdf(-d2) - S_0 * np.exp(-q * T) * norm.cdf(-d1)
     return call, put
 
-def plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
+def plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths):
     price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
     LSMC_call = []
     LSMC_put = []
@@ -23,10 +22,10 @@ def plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     for K in np.linspace(K - K / 2, K + K / 2, 20):
         for type in ["put", "call"]:
             if type == "call":
-                LSMC_call.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
+                LSMC_call.append(LSMC(price_matrix, K, r, paths, T, dt, type))
             elif type == "put":
-                LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
-        call, put = BSM(S_0, K, rf, sigma, T)
+                LSMC_put.append(LSMC(price_matrix, K, r, paths, T, dt, type))
+        call, put = BSM(S_0, K, r, q, sigma, T)
         BSM_put.append(put)
         BSM_call.append(call)
 
@@ -41,7 +40,7 @@ def plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.ylabel("Option value")
     plt.show()
 
-def plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
+def plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths):
     LSMC_call = []
     LSMC_put = []
     BSM_call = []
@@ -51,11 +50,11 @@ def plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
         for type in ["put", "call"]:
             if type == "call":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-                LSMC_call.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
+                LSMC_call.append(LSMC(price_matrix, K, r, paths, T, dt, type))
             elif type == "put":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-                LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
-        call, put = BSM(S_0, K, rf, sigma, T)
+                LSMC_put.append(LSMC(price_matrix, K, r, paths, T, dt, type))
+        call, put = BSM(S_0, K, r, q, sigma, T)
         BSM_put.append(put)
         BSM_call.append(call)
 
@@ -72,16 +71,17 @@ def plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths):
 
 paths = 200000
 # years
-T = 1
+T = 2
 # execute possibilities per year
 # has to be 1 otherwise not european option
-dt = 1
+dt = 0.5
 
-K = 10
-S_0 = 10
-rf = 0.06
+K = 130
+S_0 = 130
 sigma = 0.2
-mu = 0.06
+r = 0.07
+q = 0.01
+mu = r - q
 
-# plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-# plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
+plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)

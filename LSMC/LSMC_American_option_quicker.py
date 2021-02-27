@@ -1,17 +1,20 @@
 import numpy as np
 import time
 import matplotlib.pyplot as plt
+from numpy.polynomial import polynomial as P
 
 
 def GBM(T, dt, paths, mu, sigma, S_0):
     # start timer
     tic = time.time()
     N = T * dt
+    N = int(N)
+    dt = 1 / dt
 
     # adjust mu, sigma
-    mu = (1+mu)**(1/dt)-1
-    sigma = sigma / np.sqrt(dt)
-    # todo: add div yield
+    #mu = (1+mu)**(1/dt)-1
+    #sigma = sigma / np.sqrt(dt)
+
     price_matrix = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, N)).T)
     price_matrix = np.vstack([np.ones(paths), price_matrix])
     price_matrix = S_0 * price_matrix.cumprod(axis=0)
@@ -26,6 +29,7 @@ def GBM(T, dt, paths, mu, sigma, S_0):
 
 def plot_price_matrix(price_matrix, T, dt, paths):
     N = T * dt
+    N = int(N)
     for r in range(paths):
         plt.plot(np.linspace(0, N, N+1), price_matrix[:, r])
         plt.title("GBM")
@@ -44,15 +48,16 @@ def payoff_executing(K, price, type):
         raise SystemExit(0)
 
 
-def LSMC(price_matrix, K, rf, paths, T, dt, type):
+def LSMC(price_matrix, K, r, paths, T, dt, type):
     # start timer
     tic = time.time()
 
     # total number of steps
     N = T * dt
+    N = int(N)
 
     # adjust yearly discount factor
-    rf = (1+rf)**(1/dt)-1
+    r = (1 + r) ** (1 / dt) - 1
 
     # returns -1 if call, 1 for put --> this way the inequality statements can be used for both put and call
     sign = 1
@@ -70,7 +75,7 @@ def LSMC(price_matrix, K, rf, paths, T, dt, type):
 
     for t in range(1, N):
         # discounted cf 1 time period
-        discounted_cf = cf_matrix[N - t + 1] * np.exp(-rf)
+        discounted_cf = cf_matrix[N - t + 1] * np.exp(-r)
 
         # slice matrix and make all out of the money paths = 0 by multiplying with matrix "execute"
         X = price_matrix[N - t, :] * execute[N - t, :]
@@ -92,19 +97,12 @@ def LSMC(price_matrix, K, rf, paths, T, dt, type):
 
             # update cash flow matrix
             imm_ex = payoff_executing(K, X1, type)
-            cf_matrix[N - t] = np.ma.where(imm_ex > cont_value, imm_ex, 0)
+            cf_matrix[N - t] = np.ma.where(imm_ex > cont_value, imm_ex, cf_matrix[N-t+1] * np.exp(-r))
             cf_matrix[N - t + 1:] = np.ma.where(imm_ex > cont_value, 0, cf_matrix[N - t + 1:])
 
-    # todo:  do this without loops?
-    discounted_cf = np.copy(cf_matrix)
-
-    for t in range(0, N):
-        for i in range(paths):
-            if discounted_cf[N - t, i] != 0:
-                discounted_cf[N - t - 1, i] = discounted_cf[N - t, i] * np.exp(-rf)
-
     # obtain option value
-    option_value = np.sum(discounted_cf[0]) / paths
+    cf_matrix[0] = cf_matrix[1] * np.exp(-r)
+    option_value = np.sum(cf_matrix[0]) / paths
 
     # Time and print the elapsed time
     toc = time.time()
@@ -126,18 +124,19 @@ K = 1.1
 rf = 0.06
 """
 
-paths = 2000000
+paths = 10000
 # years
-T = 1
+T = 2
 # execute possibilities per year
-dt = 1
+dt = 20
 
 K = 130
 S_0 = 130
-rf = 0.06
 sigma = 0.1
-mu = 0.06
+r = 0.07
+q = 0.01
+mu = r - q
 
-# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-# value, pv, cf = LSMC(price_matrix, K, rf, paths, T, dt, "call")
-# plot_price_matrix(price_matrix, T, dt, paths)
+price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+value = LSMC(price_matrix, K, r, paths, T, dt, "call")
+#plot_price_matrix(price_matrix, T, dt, paths)
