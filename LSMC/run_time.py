@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 def runtime(K, r, T, type, mu, sigma, S_0):
     n = 20
-    s = 50
+    s = 40
     Steps = []
     Paths = []
     Time = []
@@ -14,13 +14,13 @@ def runtime(K, r, T, type, mu, sigma, S_0):
         tick += 1
         print(tick, "/", n**2 + n)
         for p in np.arange(100, 100+s*n, s):
-            tick +=1
+            tick += 1
             price_matrix = GBM(T, t, p, mu, sigma, S_0)
-            time = LSMC(price_matrix, K, r, p, T, t, type)
+            val, time = LSMC(price_matrix, K, r, p, T, t, type)
             Steps.append(t)
             Paths.append(p)
             Time.append(time)
-            print(tick, "/",n**2 + n)
+            print(tick, "/", n**2 + n)
 
     X = []
     X.append(Steps)
@@ -35,16 +35,18 @@ def runtime(K, r, T, type, mu, sigma, S_0):
     X1 = np.linspace(1, 1 + s*n, s)
     X2 = np.linspace(100, 100+s*n, s)
     Y_hat = coef[0, 0] * X1 + coef[0, 1] * X2
+    label = "y = {:.5f}* steps + {:.5f} * paths".format(coef[0,0], coef[0,1])
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
-    ax.scatter(X[0], X[1], Y)
-    ax.plot(X1, X2, Y_hat)
+    scatter = ax.scatter(X[0], X[1], Y, c=Y)
+    ax.plot(X1, X2, Y_hat, c="r", label=label)
+    plt.colorbar(scatter)
     ax.set_xlabel('Steps')
     ax.set_ylabel('paths')
     ax.set_zlabel('time')
-
+    plt.legend()
     plt.show()
 
-
+# add elapsed time after return in LSMC function
 runtime(10, 0.06, 1, "call", 0.06, 0.2, 10)

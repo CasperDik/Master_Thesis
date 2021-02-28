@@ -1,7 +1,7 @@
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-from numpy.polynomial import polynomial as P
+import warnings
 
 
 def GBM(T, dt, paths, mu, sigma, S_0):
@@ -72,6 +72,7 @@ def LSMC(price_matrix, K, r, paths, T, dt, type):
 
     # 1 if in the money, otherwise 0
     execute = np.where(payoff_executing(K, price_matrix, type) > 0, 1, 0)
+    #execute = np.ones_like(execute)
 
     for t in range(1, N):
         # discounted cf 1 time period
@@ -89,16 +90,24 @@ def LSMC(price_matrix, K, r, paths, T, dt, type):
         Y1 = np.ma.masked_less_equal(Y, 0) - 1
 
         if X1.count() > 0:
-            regression = np.ma.polyfit(X1, Y1, 2)
+            # this warning occurs when all values are 0's even though some cfs are postive
+            # but these are then out of the money thus zero for regression matrix
+            with warnings.catch_warnings():
+                warnings.filterwarnings("error")
+                try:
+                    regression = np.ma.polyfit(X1, Y1, 2)
 
-            # calculate continuation value
-            cont_value = np.zeros_like(Y1)
-            cont_value = np.polyval(regression, X1)
+                    # calculate continuation value
+                    cont_value = np.zeros_like(Y1)
+                    cont_value = np.polyval(regression, X1)
 
-            # update cash flow matrix
-            imm_ex = payoff_executing(K, X1, type)
-            cf_matrix[N - t] = np.ma.where(imm_ex > cont_value, imm_ex, cf_matrix[N-t+1] * np.exp(-r))
-            cf_matrix[N - t + 1:] = np.ma.where(imm_ex > cont_value, 0, cf_matrix[N - t + 1:])
+                    # update cash flow matrix
+                    imm_ex = payoff_executing(K, X1, type)
+                    cf_matrix[N - t] = np.ma.where(imm_ex > cont_value, imm_ex, cf_matrix[N - t + 1] * np.exp(-r))
+                    cf_matrix[N - t + 1:] = np.ma.where(imm_ex > cont_value, 0, cf_matrix[N - t + 1:])
+                except np.RankWarning:
+                    cf_matrix[N-t] = cf_matrix[N-t+1] * np.exp(-r)
+                    print("prevented rankwarning", "type:", type, "strike price:", K)
 
     # obtain option value
     cf_matrix[0] = cf_matrix[1] * np.exp(-r)
@@ -124,11 +133,11 @@ K = 1.1
 rf = 0.06
 """
 
-paths = 10000
+paths = 500
 # years
 T = 2
 # execute possibilities per year
-dt = 20
+dt = 12
 
 K = 130
 S_0 = 130
@@ -138,5 +147,5 @@ q = 0.01
 mu = r - q
 
 # price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-# value = LSMC(price_matrix, K, r, paths, T, dt, "call")
-#plot_price_matrix(price_matrix, T, dt, paths)
+# value, time = LSMC(price_matrix, K, r, paths, T, dt, "call")
+# plot_price_matrix(price_matrix, T, dt, paths)

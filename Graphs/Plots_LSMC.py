@@ -38,11 +38,11 @@ def plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
             elif type == "put":
                 LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
 
-    plt.plot(np.linspace(K-K/2, K+K/2, 20), LSMC_call, "--", label="LSMC call")
-    plt.plot(np.linspace(K-K/2, K+K/2, 20), LSMC_put, "--", label="LSMC put")
+    plt.plot(np.linspace(K-K/4, K+K/4, 20), LSMC_call, "--", label="LSMC call")
+    plt.plot(np.linspace(K-K/4, K+K/4, 20), LSMC_put, "--", label="LSMC put")
 
     plt.legend()
-    plt.title("Volatility vs option value - LSMC")
+    plt.title("Strike price vs option value - LSMC")
     plt.xlabel("Strike price")
     plt.ylabel("Option value")
     plt.show()
@@ -51,7 +51,7 @@ def plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
     LSMC_put = []
 
-    for S in np.linspace(S_0 - S_0 / 4, S_0 + S_0 / 4, 20):
+    for S in np.linspace(S_0 * 0.8, S_0 * 1.2, 20):
         for type in ["put", "call"]:
             if type == "call":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S)
@@ -60,8 +60,8 @@ def plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
                 price_matrix = GBM(T, dt, paths, mu, sigma, S)
                 LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
 
-    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), LSMC_call, "--", label="LSMC call")
-    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), LSMC_put, "--", label="LSMC put")
+    plt.plot(np.linspace(S_0 * 0.8, S_0 * 1.2, 20), LSMC_call, "--", label="LSMC call")
+    plt.plot(np.linspace(S_0 * 0.8, S_0 * 1.2, 20), LSMC_put, "--", label="LSMC put")
 
     plt.legend()
     plt.title("Value of the option - LSMC")
@@ -73,7 +73,7 @@ def plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
     LSMC_put = []
 
-    for time in np.linspace(T, T * 10, 10, dtype= int):
+    for time in np.linspace(T, T * 4, 20, dtype= int):
         for type in ["put", "call"]:
             if type == "call":
                 price_matrix = GBM(time, dt, paths, mu, sigma, S_0)
@@ -82,8 +82,8 @@ def plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
                 price_matrix = GBM(time, dt, paths, mu, sigma, S_0)
                 LSMC_put.append(LSMC(price_matrix, K, rf, paths, time, dt, type))
 
-    plt.plot(np.linspace(0, T * 2, 20), LSMC_call, "--", label="LSMC call")
-    plt.plot(np.linspace(0, T * 2, 20), LSMC_put, "--", label="LSMC put")
+    plt.plot(np.linspace(0, T * 4, 20), LSMC_call, "--", label="LSMC call")
+    plt.plot(np.linspace(0, T * 4, 20), LSMC_put, "--", label="LSMC put")
 
     plt.legend()
     plt.title("Time to maturity vs option value - LSMC")
@@ -105,7 +105,7 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
             elif type == "put":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S)
                 LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
-        call, put = BSM(S, K, rf, sigma, T)
+        call, put = BSM(S, K, rf, q, sigma, T)
         BSM_put.append(put)
         BSM_call.append(call)
 
@@ -121,17 +121,17 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.show()
 
 # inputs
-paths = 2000
+paths = 10000
 # years
 T = 1
 # execute possibilities per year
 # american option large dt
-dt = 365
+dt = 1
 
 K = 10
 S_0 = 10
 rf = 0.06
-sigma = 0.2
+sigma = 0.4
 r = 0.06
 q = 0.01
 mu = r - q
@@ -140,4 +140,4 @@ mu = r - q
 # plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-# american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
+american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)

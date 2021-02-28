@@ -83,5 +83,5 @@ r = 0.07
 q = 0.01
 mu = r - q
 
-plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
-plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
+# plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
+# plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
