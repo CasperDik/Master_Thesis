@@ -3,8 +3,10 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 import pandas as pd
 import matplotlib.pyplot as plt
+
+
 def runtime(K, r, T, type, mu, sigma, S_0):
-    n = 20
+    n = 40
     s = 40
     Steps = []
     Paths = []
@@ -35,13 +37,13 @@ def runtime(K, r, T, type, mu, sigma, S_0):
     X1 = np.linspace(1, 1 + s*n, s)
     X2 = np.linspace(100, 100+s*n, s)
     Y_hat = coef[0, 0] * X1 + coef[0, 1] * X2
-    label = "y = {:.5f}* steps + {:.5f} * paths".format(coef[0,0], coef[0,1])
+    label = "y = {:.5f}* steps + {:.5f} * paths".format(coef[0, 0], coef[0, 1])
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
     scatter = ax.scatter(X[0], X[1], Y, c=Y)
     ax.plot(X1, X2, Y_hat, c="r", label=label)
-    plt.colorbar(scatter)
+    plt.colorbar(scatter, shrink=0.5, pad=0.12)
     ax.set_xlabel('Steps')
     ax.set_ylabel('paths')
     ax.set_zlabel('time')
@@ -50,3 +52,5 @@ def runtime(K, r, T, type, mu, sigma, S_0):
 
 # add elapsed time after return in LSMC function
 runtime(10, 0.06, 1, "call", 0.06, 0.2, 10)
+
+# linear regression but is a linear relationship?
