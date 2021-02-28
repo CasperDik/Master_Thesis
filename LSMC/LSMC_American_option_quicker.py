@@ -137,6 +137,6 @@ r = 0.07
 q = 0.01
 mu = r - q
 
-price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-value = LSMC(price_matrix, K, r, paths, T, dt, "call")
+# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+# value = LSMC(price_matrix, K, r, paths, T, dt, "call")
 #plot_price_matrix(price_matrix, T, dt, paths)
