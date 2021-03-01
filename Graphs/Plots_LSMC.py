@@ -97,7 +97,7 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
     BSM_call = []
     BSM_put = []
 
-    for S in np.linspace(S_0 - S_0 / 4, S_0 + S_0 / 4, 20):
+    for S in np.linspace(S_0 * 0.8, S_0 * 1.2, 20):
         for type in ["put", "call"]:
             if type == "call":
                 price_matrix = GBM(T, dt, paths, mu, sigma, S)
@@ -121,19 +121,21 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.show()
 
 # inputs
-paths = 10000
+paths = 5000
+
+
 # years
 T = 1
 # execute possibilities per year
 # american option large dt
-dt = 1
+dt = 365
 
-K = 10
+K = 13
 S_0 = 10
 rf = 0.06
 sigma = 0.4
 r = 0.06
-q = 0.01
+q = 0.00
 mu = r - q
 
 # plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
