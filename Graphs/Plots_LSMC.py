@@ -92,20 +92,21 @@ def plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.show()
 
 def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
+    price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
     LSMC_call = []
     LSMC_put = []
     BSM_call = []
     BSM_put = []
 
-    for S in np.linspace(S_0 * 0.8, S_0 * 1.2, 20):
+    for K in np.linspace(K * 0.8, K * 1.2, 20):
         for type in ["put", "call"]:
             if type == "call":
-                price_matrix = GBM(T, dt, paths, mu, sigma, S)
+                # price_matrix = GBM(T, dt, paths, mu, sigma, S)
                 LSMC_call.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
             elif type == "put":
-                price_matrix = GBM(T, dt, paths, mu, sigma, S)
+                # price_matrix = GBM(T, dt, paths, mu, sigma, S)
                 LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
-        call, put = BSM(S, K, rf, q, sigma, T)
+        call, put = BSM(S_0, K, rf, q, sigma, T)
         BSM_put.append(put)
         BSM_call.append(call)
 
@@ -121,21 +122,21 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
     plt.show()
 
 # inputs
-paths = 5000
+paths = 10000
 
 
 # years
-T = 1
+T = 40
 # execute possibilities per year
 # american option large dt
-dt = 365
+dt = 12
 
-K = 13
+K = 10
 S_0 = 10
 rf = 0.06
 sigma = 0.4
 r = 0.06
-q = 0.00
+q = 0.02
 mu = r - q
 
 # plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)

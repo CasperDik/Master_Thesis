@@ -11,10 +11,6 @@ def GBM(T, dt, paths, mu, sigma, S_0):
     N = int(N)
     dt = 1 / dt
 
-    # adjust mu, sigma
-    #mu = (1+mu)**(1/dt)-1
-    #sigma = sigma / np.sqrt(dt)
-
     price_matrix = np.exp((mu - sigma ** 2 / 2) * dt + sigma * np.random.normal(0, np.sqrt(dt), size=(paths, N)).T)
     price_matrix = np.vstack([np.ones(paths), price_matrix])
     price_matrix = S_0 * price_matrix.cumprod(axis=0)
@@ -92,8 +88,7 @@ def LSMC(price_matrix, K, r, paths, T, dt, type):
         # meaning all paths are out of the money, never optimal to exercise
         if X1.count() > 0:
             regression = np.ma.polyfit(X1, Y1, 2)
-            warnings.simplefilter('ignore', np.RankWarning)
-
+            # warnings.simplefilter('ignore', np.RankWarning)
             # calculate continuation value
             cont_value = np.zeros_like(Y1)
             cont_value = np.polyval(regression, X1)
@@ -131,17 +126,17 @@ rf = 0.06
 
 paths = 10000
 # years
-T = 1
+T = 30
 # execute possibilities per year
-dt = 365
+dt = 100
 
-K = 110
+K = 130
 S_0 = 130
-sigma = 0.1
+sigma = 0.4
 r = 0.07
-q = 0.02
+q = 0.01
 mu = r - q
 
 price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-value = LSMC(price_matrix, K, r, paths, T, dt, "put")
+value = LSMC(price_matrix, K, r, paths, T, dt, "call")
 # plot_price_matrix(price_matrix, T, dt, paths)
