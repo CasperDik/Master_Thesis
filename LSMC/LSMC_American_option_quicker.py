@@ -103,15 +103,17 @@ def LSMC(price_matrix, K, r, paths, T, dt, type):
     # obtain option value
     cf_matrix[0] = cf_matrix[1] * np.exp(-r)
     option_value = np.sum(cf_matrix[0]) / paths
+    st_dev = np.std(cf_matrix[0])
 
     # Time and print the elapsed time
     toc = time.time()
     elapsed_time = toc - tic
     print('Total running time of LSMC: {:.2f} seconds'.format(elapsed_time))
 
-    print("Value of this", type, "option is:", option_value)
+    print("Value of this", type, "option is:", option_value, " with st dev: ", st_dev)
+    print("Ran this with T: ", T, " and dt: ", dt)
 
-    return option_value
+    return option_value, st_dev
 
 
 # inputs
@@ -124,11 +126,11 @@ K = 1.1
 rf = 0.06
 """
 
-paths = 10000
+paths = 100000
 # years
-T = 30
+T = 4
 # execute possibilities per year
-dt = 100
+dt = 12
 
 K = 130
 S_0 = 130
@@ -138,5 +140,5 @@ q = 0.01
 mu = r - q
 
 price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-value = LSMC(price_matrix, K, r, paths, T, dt, "call")
+value, st_dev = LSMC(price_matrix, K, r, paths, T, dt, "call")
 # plot_price_matrix(price_matrix, T, dt, paths)
