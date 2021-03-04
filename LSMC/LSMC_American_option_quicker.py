@@ -103,7 +103,7 @@ def LSMC(price_matrix, K, r, paths, T, dt, type):
     # obtain option value
     cf_matrix[0] = cf_matrix[1] * np.exp(-r)
     option_value = np.sum(cf_matrix[0]) / paths
-    st_dev = np.std(cf_matrix[0])
+    st_dev = np.std(cf_matrix[0][cf_matrix[0] != 0])
 
     # Time and print the elapsed time
     toc = time.time()
@@ -126,9 +126,9 @@ K = 1.1
 rf = 0.06
 """
 
-paths = 100000
+paths = 10000
 # years
-T = 4
+T = 30
 # execute possibilities per year
 dt = 12
 

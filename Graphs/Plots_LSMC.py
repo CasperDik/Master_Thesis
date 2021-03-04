@@ -2,6 +2,7 @@ from LSMC.LSMC_American_option_quicker import LSMC, GBM
 from Graphs.european_LSMC_vs_analytical import BSM
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 
 def plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths):
     LSMC_call = []
@@ -126,31 +127,40 @@ def perpetual_american(K, S_0, q, r, sigma):
     return (Sbar-K)*(S_0/Sbar)**B1
 
 def convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, type):
-    Tm = T + 1
-    price_matrix = GBM(Tm, dt, paths, mu, sigma, S_0)
+    T = T+1
+    price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
     lsmc_call = []
     confidence_interval_up = []
     confidence_interval_down = []
-    for T in np.linspace(1,Tm,Tm):
+    x = np.linspace(1, T, 16)
+
+    for T in x:
         slice = int(T*dt)
         val, st_dev = LSMC(price_matrix[:slice+1], K, rf, paths, T, dt, type)
         lsmc_call.append(val)
-        confidence_interval_up.append(val + 1.96 * st_dev / np.sqrt(paths))
-        confidence_interval_down.append(val - 1.96 * st_dev / np.sqrt(paths))
-    plt.plot(np.linspace(1,Tm,Tm), lsmc_call)
-    plt.fill_between(np.linspace(1,Tm,Tm), confidence_interval_up, confidence_interval_down, "b", alpha=0.1)
+        # confidence_interval_up.append(val + 1.96 * st_dev / np.sqrt(paths))
+        # confidence_interval_down.append(val - 1.96 * st_dev / np.sqrt(paths))
+
+    lsmc_call = np.array(lsmc_call, dtype=float)
+    def func(x, a, b):
+        return a * np.log(x) + b
+    popt, pcov = curve_fit(func, x, lsmc_call)
+    plt.plot(sorted(x), func(sorted(x), *popt), "r")
+
+    plt.plot(x, lsmc_call, "--")
+    # plt.fill_between(x, confidence_interval_up, confidence_interval_down, "b", alpha=0.1)
     plt.axhline(y=perpetual_american(K, S_0, q, r, sigma), c="r")
     plt.plot()
     plt.show()
 
 # inputs
-paths = 10000
+paths = 100000
 
 # years
-T = 20
+T = 30
 # execute possibilities per year
 # american option large dt
-dt = 50
+dt = 12
 
 K = 130
 S_0 = 130
