@@ -126,11 +126,11 @@ K = 1.1
 rf = 0.06
 """
 
-paths = 50000
+paths = 15
 # years
-T = 50
+T = 1
 # execute possibilities per year
-dt = 12
+dt = 365
 
 K = 120
 S_0 = 130

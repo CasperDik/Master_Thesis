@@ -100,13 +100,14 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
 
     for S in np.linspace(S_0 * 0.8, S_0 * 1.2, 20):
         for type in ["put", "call"]:
+            price_matrix = GBM(T, dt, paths, mu, sigma, S)
             if type == "call":
-                price_matrix = GBM(T, dt, paths, mu, sigma, S)
-                LSMC_call.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
+                val, st = LSMC(price_matrix, K, rf, paths, T, dt, type)
+                LSMC_call.append(val)
             elif type == "put":
-                price_matrix = GBM(T, dt, paths, mu, sigma, S)
-                LSMC_put.append(LSMC(price_matrix, K, rf, paths, T, dt, type))
-        call, put = BSM(S_0, K, rf, q, sigma, T)
+                val, st = LSMC(price_matrix, K, rf, paths, T, dt, type)
+                LSMC_put.append(val)
+        call, put = BSM(S, K, rf, q, sigma, T)
         BSM_put.append(put)
         BSM_call.append(call)
 
@@ -158,15 +159,15 @@ def convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, type):
     plt.show()
 
 # inputs
-paths = 50000
+paths = 40000
 
 # years
-T = 26
+T = 1
 # execute possibilities per year
 # american option large dt
-dt = 12
+dt = 720
 
-K = 120
+K = 130
 S_0 = 130
 rf = 0.07
 sigma = 0.15
@@ -180,5 +181,6 @@ mu = r - q
 # plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
 # plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-# american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
-convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, "call")
+american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
+# convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, "call")
+
