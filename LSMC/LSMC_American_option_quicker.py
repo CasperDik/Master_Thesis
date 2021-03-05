@@ -126,19 +126,19 @@ K = 1.1
 rf = 0.06
 """
 
-paths = 10000
+paths = 50000
 # years
-T = 30
+T = 50
 # execute possibilities per year
 dt = 12
 
-K = 130
+K = 120
 S_0 = 130
-sigma = 0.4
+sigma = 0.15
 r = 0.07
 q = 0.01
 mu = r - q
 
-price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-value, st_dev = LSMC(price_matrix, K, r, paths, T, dt, "call")
+# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+# value, st_dev = LSMC(price_matrix, K, r, paths, T, dt, "call")
 # plot_price_matrix(price_matrix, T, dt, paths)

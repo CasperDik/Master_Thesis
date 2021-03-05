@@ -124,19 +124,20 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
 def perpetual_american(K, S_0, q, r, sigma):
     B1 = (q+0.5*sigma**2-r)/sigma**2 + (np.sqrt((r-q-0.5*sigma**2)**2 + 2*r*sigma**2))/sigma**2
     Sbar = B1/(B1-1) * K
+    print((Sbar-K)*(S_0/Sbar)**B1)
     return (Sbar-K)*(S_0/Sbar)**B1
 
 def convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, type):
     T = T+1
-    price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
     lsmc_call = []
     confidence_interval_up = []
     confidence_interval_down = []
-    x = np.linspace(1, T, 16)
+    x = np.linspace(1, T, 14)
 
     for T in x:
-        slice = int(T*dt)
-        val, st_dev = LSMC(price_matrix[:slice+1], K, rf, paths, T, dt, type)
+        # slice = int(T*dt)
+        price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+        val, st_dev = LSMC(price_matrix, K, rf, paths, T, dt, type)
         lsmc_call.append(val)
         # confidence_interval_up.append(val + 1.96 * st_dev / np.sqrt(paths))
         # confidence_interval_down.append(val - 1.96 * st_dev / np.sqrt(paths))
@@ -145,27 +146,30 @@ def convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, type):
     def func(x, a, b):
         return a * np.log(x) + b
     popt, pcov = curve_fit(func, x, lsmc_call)
-    plt.plot(sorted(x), func(sorted(x), *popt), "r")
+    plt.plot(sorted(x), func(sorted(x), *popt), "k", linestyle="dashed")
 
-    plt.plot(x, lsmc_call, "--")
+    plt.plot(x, lsmc_call, "x", c="skyblue")
     # plt.fill_between(x, confidence_interval_up, confidence_interval_down, "b", alpha=0.1)
     plt.axhline(y=perpetual_american(K, S_0, q, r, sigma), c="r")
+    plt.title("Convergence of the LSMC to perpetual American option")
+    plt.xlabel("Years")
+    plt.ylabel("Option value")
     plt.plot()
     plt.show()
 
 # inputs
-paths = 100000
+paths = 50000
 
 # years
-T = 30
+T = 26
 # execute possibilities per year
 # american option large dt
 dt = 12
 
-K = 130
+K = 120
 S_0 = 130
 rf = 0.07
-sigma = 0.4
+sigma = 0.15
 r = 0.07
 q = 0.01
 mu = r - q
