@@ -112,12 +112,12 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
         BSM_call.append(call)
 
     plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), LSMC_call, "--", label="LSMC call")
-    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), BSM_call, label="BSM call")
+    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), BSM_call, label="BSM call", alpha=0.5)
     plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), LSMC_put, "--", label="LSMC put")
-    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), BSM_put, label="BSM put")
+    plt.plot(np.linspace(S_0 - S_0 / 2, S_0 + S_0 / 2, 20), BSM_put, label="BSM put", alpha=0.5)
 
     plt.legend()
-    plt.title("European vs American option")
+    plt.title("European option: BSM formula vs LSMC algorithm")
     plt.ylabel("Option value")
     plt.xlabel("Asset price, St")
     plt.show()
@@ -159,20 +159,20 @@ def convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, type):
     plt.show()
 
 # inputs
-paths = 40000
+paths = 1000000
 
 # years
 T = 1
 # execute possibilities per year
 # american option large dt
-dt = 720
+dt = 1
 
 K = 130
 S_0 = 130
 rf = 0.07
 sigma = 0.15
 r = 0.07
-q = 0.01
+q = 0.00
 mu = r - q
 
 # perpetual_american(K, S_0, q, r, sigma)
