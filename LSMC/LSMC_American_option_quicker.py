@@ -20,16 +20,10 @@ def GBM(T, dt, paths, mu, sigma, S_0):
     elapsed_time = toc - tic
     print('Total running time of GBM: {:.2f} seconds'.format(elapsed_time))
 
+    # plt.plot(np.linspace(0, N+1, N+1), price_matrix)
+    # plt.show()
+
     return price_matrix
-
-
-def plot_price_matrix(price_matrix, T, dt, paths):
-    N = T * dt
-    N = int(N)
-    for r in range(paths):
-        plt.plot(np.linspace(0, N, N+1), price_matrix[:, r])
-        plt.title("GBM")
-    plt.show()
 
 
 def payoff_executing(K, price, type):
@@ -113,7 +107,7 @@ def LSMC(price_matrix, K, r, paths, T, dt, type):
     print("Value of this", type, "option is:", option_value, " with st dev: ", st_dev)
     print("Ran this with T: ", T, " and dt: ", dt)
 
-    return option_value, st_dev
+    return option_value
 
 
 # inputs
@@ -139,6 +133,5 @@ r = 0.07
 q = 0.01
 mu = r - q
 
-# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-# value, st_dev = LSMC(price_matrix, K, r, paths, T, dt, "call")
-# plot_price_matrix(price_matrix, T, dt, paths)
+price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+# value = LSMC(price_matrix, K, r, paths, T, dt, "call")
