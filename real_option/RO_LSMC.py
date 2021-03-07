@@ -125,12 +125,12 @@ sigma = 0.15
 # life of the power plant(in years)
 T_plant = 30
 # life of the option(in years)
-T = 2
+T = 5
 # time periods per year
-dt = 12
+dt = 365
 
 # number of paths per simulations
-paths = 10
+paths = 1000
 
 price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
 value = LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, mu, I)
