@@ -94,8 +94,7 @@ def LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, Tc, I):
 def payoff_executing_RO(price, A, Q, epsilon, OPEX, r, Tc, I, T):
     # discount factor
     DF = (1-(1+r)**-T)/r
-    Payoff = ((A - epsilon * price) * Q - OPEX) * (1 - Tc) * DF
-    Payoff = Payoff - I
+    Payoff = (((A - epsilon * price) * Q - OPEX) * (1 - Tc) * DF) - I
     return Payoff.clip(min=0)
 
 
