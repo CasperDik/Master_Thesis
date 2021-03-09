@@ -21,7 +21,7 @@ def GBM(T, dt, paths, mu, sigma, S_0):
     return price_matrix
 
 
-def LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, mu, I):
+def LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, Tc, I):
     # start timer
     tic = time.time()
 
@@ -36,10 +36,10 @@ def LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, mu, I):
     cf_matrix = np.zeros((N + 1, paths))
 
     # calculated cf when executed in time T (cfs European option)
-    cf_matrix[N] = payoff_executing_RO(price_matrix[N], A, Q, epsilon, OPEX, r, mu, I, T)
+    cf_matrix[N] = payoff_executing_RO(price_matrix[N], A, Q, epsilon, OPEX, r, Tc, I, T)
 
     # 1 if in the money, otherwise 0
-    execute = np.where(payoff_executing_RO(price_matrix, A, Q, epsilon, OPEX, r, mu, I, T) > 0, 1, 0)
+    execute = np.where(payoff_executing_RO(price_matrix, A, Q, epsilon, OPEX, r, Tc, I, T) > 0, 1, 0)
 
     # consider all paths?
     # execute = np.ones_like(execute)
@@ -69,7 +69,7 @@ def LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, mu, I):
             cont_value = np.polyval(regression, X1)
 
             # update cash flow matrix
-            imm_ex = payoff_executing_RO(X1, A, Q, epsilon, OPEX, r, mu, I, T)
+            imm_ex = payoff_executing_RO(X1, A, Q, epsilon, OPEX, r, Tc, I, T)
             cf_matrix[N - t] = np.ma.where(imm_ex > cont_value, imm_ex, cf_matrix[N - t + 1] * np.exp(-r))
             cf_matrix[N - t + 1:] = np.ma.where(imm_ex > cont_value, 0, cf_matrix[N - t + 1:])
         else:
@@ -91,13 +91,12 @@ def LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, mu, I):
     return option_value
 
 
-def payoff_executing_RO(price, A, Q, epsilon, OPEX, r, mu, I, T):
-    # discount factors continuous compounding
-    df_ann = (1-np.exp(-r*T_plant))/(np.exp(r) - 1)
-    df_growing_ann = (1 - np.exp((mu-r)*T_plant))/(np.exp(r-mu) - 1)
-
-    NPV = (A * Q) * df_ann - (price * (1 / epsilon) * Q) * df_growing_ann - OPEX * df_ann - I
-    return NPV.clip(min=0)
+def payoff_executing_RO(price, A, Q, epsilon, OPEX, r, Tc, I, T):
+    # discount factor
+    DF = (1-(1+r)**-T)/r
+    Payoff = ((A - epsilon * price) * Q - OPEX) * (1 - Tc) * DF
+    Payoff = Payoff - I
+    return Payoff.clip(min=0)
 
 
 # inputs
@@ -112,6 +111,8 @@ epsilon = 0.85
 OPEX = 40000
 # initial investment
 I = 1400000
+# tax rate
+Tc = 0.25
 # discount rate (WACC?)
 r = 0.06
 
@@ -133,4 +134,4 @@ dt = 365
 paths = 1000
 
 price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-value = LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, mu, I)
+value = LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, Tc, I)
