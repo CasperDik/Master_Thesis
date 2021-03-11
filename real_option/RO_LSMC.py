@@ -132,5 +132,5 @@ dt = 365
 # number of paths per simulations
 paths = 1000
 
-price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-value = LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, Tc, I)
+# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+# value = LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, Tc, I)
