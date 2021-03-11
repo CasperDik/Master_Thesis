@@ -102,10 +102,10 @@ def american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths):
         for type in ["put", "call"]:
             price_matrix = GBM(T, dt, paths, mu, sigma, S)
             if type == "call":
-                val, st = LSMC(price_matrix, K, rf, paths, T, dt, type)
+                val = LSMC(price_matrix, K, rf, paths, T, dt, type)
                 LSMC_call.append(val)
             elif type == "put":
-                val, st = LSMC(price_matrix, K, rf, paths, T, dt, type)
+                val = LSMC(price_matrix, K, rf, paths, T, dt, type)
                 LSMC_put.append(val)
         call, put = BSM(S, K, rf, q, sigma, T)
         BSM_put.append(put)
@@ -159,7 +159,7 @@ def convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, type):
     plt.show()
 
 # inputs
-paths = 1000000
+paths = 10000
 
 # years
 T = 1

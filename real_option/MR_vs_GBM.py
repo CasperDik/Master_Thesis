@@ -1,5 +1,5 @@
 from LSMC.LSMC_American_option_quicker import GBM
-from real_option.MR import MR1, MR2
+from real_option.MR import MR2
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -8,11 +8,11 @@ dt = 365
 paths = 2
 N = T * dt
 
-theta = 0.4
-sigma = 0.3
+theta = 0.2
+sigma = 0.2
 Sbar = 100 # long run equilibrium price
 S_0 = 100
-mu = 0.06
+mu = 0.02
 
 MR = MR2(T, dt, paths, sigma, S_0, theta, Sbar)
 GBM = GBM(T, dt, paths, mu, sigma, S_0)

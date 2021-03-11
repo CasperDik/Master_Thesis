@@ -1,6 +1,7 @@
 import numpy as np
 
-np.random.seed(0)
-
-for i in range(2):
-    print(np.random.normal(0, 1), np.random.normal(0, 1))
+theta = 0.01
+t=1
+variance = (np.exp(2*theta*t)-1)
+print(variance)
+print(np.random.normal(0, variance))
