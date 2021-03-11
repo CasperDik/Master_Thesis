@@ -2,8 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-# Vasicek model
-# https://en.wikipedia.org/wiki/Vasicek_model
+# https://math.stackexchange.com/questions/1287634/implementing-ornstein-uhlenbeck-in-matlab
 
 def MR1(T, dt, paths, sigma, S_0, theta, Sbar):
     tic = time.time()
@@ -29,12 +28,19 @@ def MR2(T, dt, paths, sigma, S_0, theta, Sbar):
     tic = time.time()
     N = T * dt
     N = int(N)
-    dt = 1 / dt
 
-    MR_matrix = np.zeros((N+1, paths))
-    MR_matrix[0] = S_0
-    for t in range(1, N+1):
-        MR_matrix[t] = S_0 * np.exp(-theta*t) + Sbar * (1 - np.exp(-theta*t)) + (sigma * np.exp(-theta*t))/(np.sqrt(2 * theta)) * np.random.normal(0, (np.exp(2 * theta * t)-1))
+    dt = np.array([np.linspace(0,T, N+1)]).T
+    ex = np.array(np.exp(-theta*dt))
+    ex = np.reshape(ex, (N+1, 1))
+    W = np.zeros((N+1, paths))
+    for i in range(0, len(W)-1):
+        W[i+1] = W[i] + np.sqrt(np.exp(2*theta*dt[i+1])-np.exp(2*theta*dt[i])) * np.random.normal(size=(1, paths))
+
+    MR_matrix = S_0 * ex + Sbar * (1-ex) + sigma * ex * W / np.sqrt(2 * theta)
+
+    toc = time.time()
+    elapsed_time = toc - tic
+    print('Total running time of MR2: {:.2f} seconds'.format(elapsed_time))
 
     return MR_matrix
 
@@ -51,6 +57,8 @@ S_0 = 100
 N = T * dt
 # plt.plot(np.linspace(0, T, N+1), MR_matrix, label="MR1")
 # plt.show()
+
+# MR2(T, dt, paths, sigma, S_0, theta, Sbar)
 
 """
 links:
