@@ -10,7 +10,7 @@ def MR1(T, dt, paths, sigma, S_0, theta, Sbar):
     N = int(N)
     dt = 1 / dt
 
-    wiener = (sigma * np.random.normal(0, 1, size=(paths, N+1)) * np.sqrt(dt)).T
+    wiener = (sigma * np.random.normal(0, np.sqrt(dt), size=(paths, N+1))).T
     MR_matrix = np.zeros_like(wiener)
     MR_matrix[0] = S_0
     for i in range(1, N+1):
