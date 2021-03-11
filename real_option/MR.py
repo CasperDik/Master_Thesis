@@ -29,7 +29,7 @@ def MR2(T, dt, paths, sigma, S_0, theta, Sbar):
     N = T * dt
     N = int(N)
 
-    dt = np.array([np.linspace(0,T, N+1)]).T
+    dt = np.array([np.linspace(0, T, N+1)]).T
     ex = np.array(np.exp(-theta*dt))
     ex = np.reshape(ex, (N+1, 1))
     W = np.zeros((N+1, paths))
@@ -53,18 +53,12 @@ sigma = 0.3
 Sbar = 100 # long run equilibrium price
 S_0 = 100
 
-# MR_matrix = MR1(T, dt, paths, sigma, S_0, theta, Sbar)
+# MR1 = MR1(T, dt, paths, sigma, S_0, theta, Sbar)
+# MR2 = MR2(T, dt, paths, sigma, S_0, theta, Sbar)
 N = T * dt
-# plt.plot(np.linspace(0, T, N+1), MR_matrix, label="MR1")
+# plt.plot(np.linspace(0, T, N+1), MR1, label="MR1")
+# plt.plot(np.linspace(0, T, N+1), MR2, label="MR1")
+
 # plt.show()
 
-# MR2(T, dt, paths, sigma, S_0, theta, Sbar)
 
-"""
-links:
-https://en.wikipedia.org/wiki/Vasicek_model
-https://ipython-books.github.io/134-simulating-a-stochastic-differential-equation/
-https://github.com/ipython-books/cookbook-2nd-code/blob/master/chapter13_stochastic/04_sde.ipynb
-https://github.com/jwergieluk/ou_noise
-https://en.wikipedia.org/wiki/Euler%E2%80%93Maruyama_method
-"""
