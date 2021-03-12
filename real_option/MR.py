@@ -26,23 +26,50 @@ def MR1(T, dt, paths, sigma, S_0, theta, Sbar):
 
 
 def MR2(T, dt, paths, sigma, S_0, theta, Sbar):
-    # start timer
     tic = time.time()
     N = T * dt
     N = int(N)
+    dt = 1 / dt
 
-    dt = np.array([np.linspace(0, T, N+1)]).T
-    ex = np.array(np.exp(-theta*dt))
-    ex = np.reshape(ex, (N+1, 1))
-    W = np.zeros((N+1, paths))
-    for i in range(0, len(W)-1):
-        W[i+1] = W[i] + np.sqrt(np.exp(2*theta*dt[i+1])-np.exp(2*theta*dt[i])) * np.random.normal(size=(1, paths))
-
-    MR_matrix = S_0 * ex + Sbar * (1-ex) + sigma * ex * W / np.sqrt(2 * theta)
+    wiener = (sigma * np.random.normal(0, np.sqrt(dt), size=(paths, N + 1))).T
+    MR_matrix = np.zeros_like(wiener)
+    MR_matrix[0] = S_0
+    for i in range(1, N + 1):
+        dx = np.exp(theta * (np.log(Sbar) - sigma**2/2*theta - np.log(MR_matrix[i - 1])) * dt + wiener[i])
+        MR_matrix[i] = MR_matrix[i - 1] * dx
 
     toc = time.time()
     elapsed_time = toc - tic
-    print('Total running time of MR2: {:.2f} seconds'.format(elapsed_time))
+    print('Total running time of MR1: {:.2f} seconds'.format(elapsed_time))
+
+    return MR_matrix
+
+
+def MR3(T, dt, paths, sigma_g, sigma_e, S_0, theta_e, theta_g, Sbar):
+    tic = time.time()
+    N = T * dt
+    N = int(N)
+    dt = 1 / dt
+
+    dW_G = (sigma_g * np.random.normal(0, np.sqrt(dt), size=(paths, N + 1))).T
+    dW_E = (sigma_e * np.random.normal(0, np.sqrt(dt), size=(paths, N + 1))).T
+
+    # long run equilibrium level
+    LR_eq = np.zeros_like(dW_E)
+    LR_eq[0] = Sbar #todo: change
+
+    # price matrix
+    MR_matrix = np.zeros_like(dW_G)
+    MR_matrix[0] = S_0
+
+    for i in range(1, N+1):
+        drift = (theta_e * (np.log(Sbar) - sigma**2/2*theta_e - np.log(LR_eq[i-1])))
+        LR_eq[i] = LR_eq[i-1] * np.exp(drift * dt + dW_E[i])
+        MR_matrix[i] = MR_matrix[i-1] * np.exp((theta_g * (np.log(LR_eq[i]) - sigma_g**2/2*theta_g - np.log(MR_matrix[i-1])))*dt + dW_G[i])
+
+    toc = time.time()
+    elapsed_time = toc - tic
+    print('Total running time of MR1: {:.2f} seconds'.format(elapsed_time))
 
     return MR_matrix
 
