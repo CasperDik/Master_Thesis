@@ -56,12 +56,14 @@ def MR3(T, dt, paths, sigma_g, sigma_e, S_0, theta_e, theta_g, Sbar):
 
     # long run equilibrium level
     LR_eq = np.zeros_like(dW_E)
-    LR_eq[0] = Sbar #todo: change
+    LR_eq[0] = Sbar # todo: is not Sbar, change
 
     # price matrix
     MR_matrix = np.zeros_like(dW_G)
     MR_matrix[0] = S_0
 
+    # todo: check code, check matrices
+    # todo: plot stochastic equilibrium level
     for i in range(1, N+1):
         drift = (theta_e * (np.log(Sbar) - sigma_e**2/2*theta_e - np.log(LR_eq[i-1])))
         LR_eq[i] = LR_eq[i-1] * np.exp(drift * dt + dW_E[i])
