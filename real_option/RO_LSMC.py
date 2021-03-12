@@ -98,39 +98,40 @@ def payoff_executing_RO(price, A, Q, epsilon, OPEX, r, Tc, I, T):
     return Payoff.clip(min=0)
 
 
-# inputs
+if __name__ == "__main__":
+    # inputs
 
-# electricity price
-A = 40
-# Quantity per year
-Q = 40000
-# efficiency rate of the plant
-epsilon = 0.85
-# maintenance and operating cost per year
-OPEX = 40000
-# initial investment
-I = 1400000
-# tax rate
-Tc = 0.25
-# discount rate (WACC?)
-r = 0.06
+    # electricity price
+    A = 40
+    # Quantity per year
+    Q = 40000
+    # efficiency rate of the plant
+    epsilon = 0.85
+    # maintenance and operating cost per year
+    OPEX = 40000
+    # initial investment
+    I = 1400000
+    # tax rate
+    Tc = 0.25
+    # discount rate (WACC?)
+    r = 0.06
 
-# initial gas price
-S_0 = 20
-# drift rate mu of gas price
-mu = 0.02
-# volatility of the gas price
-sigma = 0.15
+    # initial gas price
+    S_0 = 20
+    # drift rate mu of gas price
+    mu = 0.02
+    # volatility of the gas price
+    sigma = 0.15
 
-# life of the power plant(in years)
-T_plant = 30
-# life of the option(in years)
-T = 5
-# time periods per year
-dt = 365
+    # life of the power plant(in years)
+    T_plant = 30
+    # life of the option(in years)
+    T = 5
+    # time periods per year
+    dt = 365
 
-# number of paths per simulations
-paths = 1000
+    # number of paths per simulations
+    paths = 1000
 
-# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-# value = LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, Tc, I)
+    price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+    value = LSMC_RO(price_matrix, r, paths, T, dt, A, Q, epsilon, OPEX, Tc, I)

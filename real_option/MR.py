@@ -63,7 +63,7 @@ def MR3(T, dt, paths, sigma_g, sigma_e, S_0, theta_e, theta_g, Sbar):
     MR_matrix[0] = S_0
 
     for i in range(1, N+1):
-        drift = (theta_e * (np.log(Sbar) - sigma**2/2*theta_e - np.log(LR_eq[i-1])))
+        drift = (theta_e * (np.log(Sbar) - sigma_e**2/2*theta_e - np.log(LR_eq[i-1])))
         LR_eq[i] = LR_eq[i-1] * np.exp(drift * dt + dW_E[i])
         MR_matrix[i] = MR_matrix[i-1] * np.exp((theta_g * (np.log(LR_eq[i]) - sigma_g**2/2*theta_g - np.log(MR_matrix[i-1])))*dt + dW_G[i])
 
@@ -73,21 +73,22 @@ def MR3(T, dt, paths, sigma_g, sigma_e, S_0, theta_e, theta_g, Sbar):
 
     return MR_matrix
 
-T = 1
-dt = 365
-paths = 14
+if __name__ == "__main__":
+    T = 1
+    dt = 365
+    paths = 14
 
-theta = 0.8
-sigma = 0.3
-Sbar = 100 # long run equilibrium price
-S_0 = 100
+    theta = 0.8
+    sigma = 0.3
+    Sbar = 100 # long run equilibrium price
+    S_0 = 100
 
-# MR1 = MR1(T, dt, paths, sigma, S_0, theta, Sbar)
-# MR2 = MR2(T, dt, paths, sigma, S_0, theta, Sbar)
-N = T * dt
-# plt.plot(np.linspace(0, T, N+1), MR1, label="MR1")
-# plt.plot(np.linspace(0, T, N+1), MR2, label="MR1")
+    MR1 = MR1(T, dt, paths, sigma, S_0, theta, Sbar)
+    MR2 = MR2(T, dt, paths, sigma, S_0, theta, Sbar)
+    N = T * dt
+    plt.plot(np.linspace(0, T, N+1), MR1, label="MR1")
+    plt.plot(np.linspace(0, T, N+1), MR2, label="MR1")
 
-# plt.show()
+    plt.show()
 
 

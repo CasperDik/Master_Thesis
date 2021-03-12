@@ -69,19 +69,21 @@ def plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths):
     plt.ylabel("Option value")
     plt.show()
 
-paths = 200000
-# years
-T = 2
-# execute possibilities per year
-# has to be 1 otherwise not european option
-dt = 0.5
 
-K = 130
-S_0 = 130
-sigma = 0.2
-r = 0.07
-q = 0.01
-mu = r - q
+if __name__ == "__main__":
+    paths = 200000
+    # years
+    T = 2
+    # execute possibilities per year
+    # has to be 1 otherwise not european option
+    dt = 0.5
 
-# plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
-# plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
+    K = 130
+    S_0 = 130
+    sigma = 0.2
+    r = 0.07
+    q = 0.01
+    mu = r - q
+
+    plot_strike_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)
+    plot_volatility_GBMvsLSMC(S_0, K, T, dt, mu, r, q, sigma, paths)

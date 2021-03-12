@@ -109,29 +109,29 @@ def LSMC(price_matrix, K, r, paths, T, dt, type):
 
     return option_value
 
+if __name__ == "__main__":
+    # inputs
+    """
+    # example longstaff and schwartz
+    price_matrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1], [1.09, 1.16, 1.22, 0.93, 1.11, 0.76, 0.92, 0.88], [1.08, 1.26, 1.07, 0.97, 1.56, 0.77, 0.84, 1.22], [1.34, 1.54, 1.03, 0.92, 1.52, 0.9, 1.01, 1.34]])
+    paths = 8
+    T = 3
+    K = 1.1
+    rf = 0.06
+    """
 
-# inputs
-"""
-# example longstaff and schwartz
-price_matrix = np.array([[1, 1, 1, 1, 1, 1, 1, 1], [1.09, 1.16, 1.22, 0.93, 1.11, 0.76, 0.92, 0.88], [1.08, 1.26, 1.07, 0.97, 1.56, 0.77, 0.84, 1.22], [1.34, 1.54, 1.03, 0.92, 1.52, 0.9, 1.01, 1.34]])
-paths = 8
-T = 3
-K = 1.1
-rf = 0.06
-"""
+    paths = 100000
+    # years
+    T = 1
+    # execute possibilities per year
+    dt = 1000
 
-paths = 100000
-# years
-T = 1
-# execute possibilities per year
-dt = 1000
+    K = 100
+    S_0 = 100
+    sigma = 0.2
+    r = 0.06
+    q = 0.01
+    mu = r - q
 
-K = 100
-S_0 = 100
-sigma = 0.2
-r = 0.06
-q = 0.01
-mu = r - q
-
-# price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
-# value = LSMC(price_matrix, K, r, paths, T, dt, "call")
+    price_matrix = GBM(T, dt, paths, mu, sigma, S_0)
+    value = LSMC(price_matrix, K, r, paths, T, dt, "call")

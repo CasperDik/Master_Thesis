@@ -172,20 +172,20 @@ def value_american_option(price_matrix, K, rf, paths, T, type):
 
     return option_value, cf_matrix, discounted_cf
 
+if __name__ == "__main__":
+    # inputs
+    paths = 2000
+    T = 10
 
-# inputs
-paths = 2000
-T = 10
+    K = 10
+    S_0 = 12
+    rf = 0.06
+    sigma = 0.4
+    mu = 0.06
 
-K = 10
-S_0 = 12
-rf = 0.06
-sigma = 0.4
-mu = 0.06
+    price_matrix = GBM(T, paths, mu, sigma, S_0)
+    # plot_price_matrix(price_matrix, T, paths)
+    val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
 
-price_matrix = GBM(T, paths, mu, sigma, S_0)
-# plot_price_matrix(price_matrix, T, paths)
-val, cf, pv = value_american_option(price_matrix, K, rf, paths, T, "call")
-
-# plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
-# plotting_strike(K, rf, paths, T, mu, sigma, S_0)
+    plotting_volatility(K, rf, paths, T, mu, sigma, S_0)
+    plotting_strike(K, rf, paths, T, mu, sigma, S_0)

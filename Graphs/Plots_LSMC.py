@@ -158,29 +158,31 @@ def convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, type):
     plt.plot()
     plt.show()
 
-# inputs
-paths = 10000
 
-# years
-T = 1
-# execute possibilities per year
-# american option large dt
-dt = 1
+if __name__ == "__main__":
+    # inputs
+    paths = 10000
 
-K = 130
-S_0 = 130
-rf = 0.07
-sigma = 0.15
-r = 0.07
-q = 0.00
-mu = r - q
+    # years
+    T = 1
+    # execute possibilities per year
+    # american option large dt
+    dt = 1
 
-# perpetual_american(K, S_0, q, r, sigma)
+    K = 130
+    S_0 = 130
+    rf = 0.07
+    sigma = 0.15
+    r = 0.07
+    q = 0.00
+    mu = r - q
 
-# plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-# plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-# plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-# plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
-american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
-# convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, "call")
+    # perpetual_american(K, S_0, q, r, sigma)
+
+    # plot_volatility_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+    # plot_strike_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+    # plot_price_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+    # plot_maturity_LSMC(S_0, K, T, dt, mu, rf, sigma, paths)
+    american_vs_european(S_0, K, T, dt, mu, rf, sigma, paths)
+    # convergence_american_perpetual(T, dt, paths, mu, sigma, S_0, "call")
 
